@@ -1,0 +1,58 @@
+
+/*General styling*/
+.top {
+  padding: 2%;
+  text-align: center;
+  color: white;
+  border: solid 2px;
+  border-color: #C1FEF3;
+  margin: 2%;
+  font-size: larger;
+  font-weight: bold;
+}
+
+main {
+  margin: 2%;
+  border: solid 2px;
+  border-color: #C1FEF3;
+  padding: 2%;
+  color: #C1FEF3;
+}
+
+a {
+  color: white;
+}
+
+body {
+  background-color: #002929;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+
+/*Styling for the buoy data page*/
+.buoyData {
+  text-align: center;
+}
+
+.buoyData table {
+  margin: auto; /* Center the table horizontally */
+  width: 30%; /* Set the width of the table */
+  text-align: left;
+}
+
+.buoyInput input {
+  margin-left: 10px;
+  margin-right: 10px
+}
+
+.buoyHeader {
+  text-align: center;
+  padding-bottom: 20px;
+  font-weight: bold;
+}
+
+.nearbyTable {
+  overflow-y:scroll;
+  height:150px;
+  display:block;
+}
