@@ -13,9 +13,9 @@ class User:
     def setUser(self) -> None:
         try:
             #connect to database
-            cnx = mysql.connector.connect(user='surfAdmin', password='surfShaka420',
+            cnx = mysql.connector.connect(user='#####', password='#####',
                                     host='127.0.0.1',
-                                    database='SurfForecast')
+                                    database='#####')
             print("mysql Connection Successful")
             cursor = cnx.cursor()
 
@@ -71,9 +71,9 @@ class User:
         #check if in database
         try:
             #connect to database
-            cnx = mysql.connector.connect(user='surfAdmin', password='surfShaka420',
+            cnx = mysql.connector.connect(user='####', password='####',
                                     host='127.0.0.1',
-                                    database='SurfForecast')
+                                    database='####')
             print("mysql Connection Successful")
             cursor = cnx.cursor()
 
@@ -101,7 +101,7 @@ class User:
     def createUser(username, password):
         try:
             #connect to database
-            cnx = mysql.connector.connect(user='surfAdmin', password='surfShaka420',
+            cnx = mysql.connector.connect(user='####', password='####',
                                     host='127.0.0.1',
                                     database='SurfForecast')
             print("mysql Connection Successful")
