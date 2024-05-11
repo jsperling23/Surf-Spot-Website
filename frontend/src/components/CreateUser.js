@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 function CreateUser () {
     const [username, setUsername] = useState(null);
     const [password, setPassword] = useState(null);
+    const [password2, setPassword2] = useState(null);
     const navigate = useNavigate();
 
     async function createFunc(username, password) {
@@ -12,26 +13,31 @@ function CreateUser () {
             {method: 'POST',
             headers: {
                 'Content-Type': 'application/json'},
-            body: JSON.stringify({
+                body: JSON.stringify({
                     username: username,
                     password: password
-                }),
-            credentials: 'include'
+                }), credentials: 'include'
             }
         );
         console.log(create.headers);
-        return create.status
+        return create
     };
-
+    
     const handleSubmit = async (e) => {
+        if (password != password2) {
+            return alert('Passwords do not match')
+        };
         e.preventDefault();
         const create = await createFunc(username, password)
-        if (create === 200) {
+        if (create.status === 200) {
+            console.log(create.status)
             alert("Account creation successful")
-            //navigate('/');
+            navigate('/');
         } else {
-            alert('Error logging in, please try again')
-        }
+            const responseData = await create.json();
+            console.log(responseData)
+            alert(responseData.result)
+        };
     };
 
 
@@ -63,6 +69,17 @@ function CreateUser () {
                         required
                         maxLength='100'
                         onChange={e => setPassword(e.target.value)}
+                        >
+                        </input>
+                        <br></br>
+                        <br></br>
+                        <label htmlFor='password'>Re-enter Password: </label>
+                        <input
+                        className='password'
+                        type='password'
+                        required
+                        maxLength='100'
+                        onChange={e => setPassword2(e.target.value)}
                         >
                         </input>
                         <br></br>

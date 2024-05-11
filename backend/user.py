@@ -114,7 +114,7 @@ class User:
         return None
 
     @staticmethod
-    def createUser(username, password):
+    def checkIfExists(username: str) -> bool:
         try:
             load_dotenv()
             dbUser = os.getenv("dbUser")
@@ -127,12 +127,67 @@ class User:
                                           host=dbHost,
                                           database=dbName)
             print("mysql Connection Successful")
-
             cursor = cnx.cursor()
-            salt = bcrypt.gensalt()
-            hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
-            query = "INSERT INTO Users(username, password) VALUES(%s, %s)"
-            cursor.execute(query, [username, hashed])
+            query = "SELECT * FROM Users WHERE username = %s"
+            cursor.execute(query, [username])
+            user = cursor.fetchone()
+            cursor.close()
+            cnx.close()
+
+            # If user is found, return True, else False
+            return user is not None
+
+        except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                print("Something is wrong with your user name or password")
+            elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                print("Database does not exist")
+            else:
+                print(err)
+            return None
+
+    @staticmethod
+    def createUser(username: str, password: str) -> tuple:
+        """
+        This function takes in a username and password. It uses a try/except
+        block to connect to the database and assuming the connection is
+        successful, then an attempt at creating a new user is completed.
+
+        Parameters:
+                username(str)
+                password(str)
+
+        Returns Tuples:
+                (True, 0): Account creation is successful
+                (False, 1): Username already exists
+                (False, 2): Error occurred when connection to database
+        """
+        try:
+            load_dotenv()
+            dbUser = os.getenv("dbUser")
+            dbPassword = os.getenv("dbPassword")
+            dbName = os.getenv("dbName")
+            dbHost = os.getenv("dbHost")
+            # connect to database
+            cnx = mysql.connector.connect(user=dbUser,
+                                          password=dbPassword,
+                                          host=dbHost,
+                                          database=dbName)
+            print("mysql Connection Successful")
+            if not User.checkIfExists(username):
+                cursor = cnx.cursor()
+                salt = bcrypt.gensalt()
+                hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
+                query = "INSERT INTO Users(username, password) VALUES(%s, %s)"
+                cursor.execute(query, [username, hashed])
+
+                # close connection and return if account creation successful
+                cnx.commit()
+                cursor.close()
+                cnx.close()
+                return (True, 0)
+            else:
+                return (False, 1)
 
         # error handling
         except mysql.connector.Error as err:
@@ -142,12 +197,7 @@ class User:
                 print("Database does not exist")
             else:
                 print(err)
-
-        # close connection and return
-        cnx.commit()
-        cursor.close()
-        cnx.close()
-        return
+            return (False, 2)
 
 
 if __name__ == "__main__":

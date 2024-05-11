@@ -49,12 +49,24 @@ def login():
 
 @app.route("/createUser", methods=["POST"])
 def createUser():
+    """
+    Route used to create a user. POST method that takes in a username
+    and password from frontend form. If the username already exists it
+    returns a 409 conflict reponse since the username already exists.
+    Otherwise, it will return 200 if successful or 500 if there is some
+    internal error such as a bad database connection.
+    """
     formData = request.json
     username = formData['username']
     password = formData['password']
     print("username: ", username, "password: ", password)
-    User.createUser(username, password)
-    return ""
+    creation = User.createUser(username, password)
+    if creation[0] is True:
+        return jsonify({"result": "Account creation successful"}), 200
+    elif creation[0] is False and creation[1] == 1:
+        return jsonify({"result": "Username already exists"}), 409
+    else:
+        return jsonify({"result": "Internal service error"}), 500
 
 
 @app.route("/auth", methods=["GET"])
