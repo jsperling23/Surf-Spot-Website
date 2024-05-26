@@ -7,10 +7,9 @@ function NotLoggedHome() {
     console.log("component rendered")
     const [formsubmitted, setFormSubmitted] = useState(false);
     const [buoy, setBuoy] = useState("");
-    const [latitude, setLatitude] = useState(null)
-    const [longitude, setLongitude] = useState(null)
-    const [nearby, setNearby] = useState(null)
-    const [loggedStatus, setStatus] = useState(false);
+    const [latitude, setLatitude] = useState(null);
+    const [longitude, setLongitude] = useState(null);
+    const [nearby, setNearby] = useState(null);
     const navigate = useNavigate();
 
     //Handle form submission and pass the buoy state onto /buoyDisplay
@@ -54,7 +53,6 @@ function NotLoggedHome() {
 
     return (
         <> 
-            <NavLink to = "/login">Login Here</NavLink>
             <article> 
                 <p>If you're a new user, give yourself at least 5 minutes to find and enter your buoy station ID.</p>
                 <p>Choose your buoy from a list of buoys here: <a href = "https://www.ndbc.noaa.gov/to_station.shtml">List of NOAA Buoys (requires knowledge of buoy locations)</a> or <a href='https://www.ndbc.noaa.gov/'>Map of NOAA Buoys (requires knowledge of using maps)</a></p>

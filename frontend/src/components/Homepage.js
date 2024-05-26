@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import LoggedHome from './loggedHome';
 import NotLoggedHome from './notLoggedHome';
-import Menu from './LoggedNav';
+import Menu from './Menu';
 
 
 
@@ -29,7 +29,7 @@ function Homepage() {
     
     return (
         <>
-            <div>{ loggedStatus ? <Menu onClick = { handleLogout }/> : null}</div>
+            <div>{ <Menu onClick = { handleLogout }/> }</div>
             <div>{ loggedStatus ? <LoggedHome/> : <NotLoggedHome/>}</div>
         </>
     )

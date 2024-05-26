@@ -23,6 +23,7 @@ function CreateUser () {
         return create
     };
     
+    // deal with form submission
     const handleSubmit = async (e) => {
         if (password != password2) {
             return alert('Passwords do not match')
