@@ -1,4 +1,5 @@
-DROP TABLE IF EXISTS Buoys, Users, SurfSpots, IdealConditions;
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS Buoys, Users, SurfSpots, IdealConditions, SavedSessions;
 
 CREATE TABLE Buoys(
     buoyID int AUTO_INCREMENT NOT NULL UNIQUE,
@@ -32,30 +33,30 @@ CREATE TABLE SurfSpots(
 CREATE TABLE IdealConditions(
     conditionID int AUTO_INCREMENT NOT NULL UNIQUE,
     spotID INT NOT NULL,
-    windUpper int NOT NULL,
-    windLower int NOT NULL,
+    windUpper INT NOT NULL,
+    windLower INT NOT NULL,
     windDirectionUpper int NOT NULL,
     windDirectionLower int NOT NULL,
-    swellHeightUpper float(4, 2) NOT NULL,
-    swellHeightLower float(4, 2) NOT NULL,
-    swellPeriodUpper int NOT NULL,
-    swellPeriodLower int NOT NULL,
-    tideUpper float(3, 1) NOT NULL,
-    tideLower float(3, 1) NOT NULL,
+    swellHeightUpper DECIMAL(4, 2) NOT NULL,
+    swellHeightLower DECIMAL(4, 2) NOT NULL,
+    swellPeriodUpper INT NOT NULL,
+    swellPeriodLower INT NOT NULL,
+    tideUpper DECIMAL(3, 1) NOT NULL,
+    tideLower DECIMAL(3, 1) NOT NULL,
     description VARCHAR(255),
-    FOREIGN KEY (spotID) REFERENCES SurfSpots ON DELETE CASCADE
+    FOREIGN KEY (spotID) REFERENCES SurfSpots(spotID) ON DELETE CASCADE
 );
 
 CREATE TABLE SavedSessions(
-    sessionID int AUTO_INCREMENT NOT NULL UNIQUE,
+    sessionID INT AUTO_INCREMENT NOT NULL UNIQUE,
     spotID INT NOT NULL,
-    windSpeed int NOT NULL,
-    windDirection int NOT NULL,
-    swellHeight float(4, 2) NOT NULL,
-    swellPeriod int NOT NULL,
-    tide float(3, 1) NOT NULL,
-    swellActivity VARCHAR(15)
-    tideDirection VARCHAR(15)
+    windSpeed INT NOT NULL,
+    windDirection INT NOT NULL,
+    swellHeight DECIMAL(4, 2) NOT NULL,
+    swellPeriod INT NOT NULL,
+    tide DECIMAL(3, 1) NOT NULL,
+    swellActivity VARCHAR(15),
+    tideDirection VARCHAR(15),
     description VARCHAR(255),
-    FOREIGN KEY (spotID) REFERENCES SurfSpots ON DELETE CASCADE
+    FOREIGN KEY (spotID) REFERENCES SurfSpots(spotID) ON DELETE CASCADE
 );
