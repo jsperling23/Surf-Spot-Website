@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Menu from './LoggedNav';
+import Menu from './Menu';
 
 
 
