@@ -1,6 +1,5 @@
 # import libraries
 import os
-from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
@@ -10,14 +9,19 @@ from flask_login import LoginManager, login_user, logout_user, login_required
 from buoyParser import parseBuoy
 from haversineCalc import haversineCalc
 from user import User
+from dbClass import Database
 
-load_dotenv()
-
+# setup flask server and login
 app = Flask(__name__)
 app.secret_key = os.getenv("secretKey")
 CORS(app, supports_credentials=True)
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+# connect to database
+db = Database()
+if not db.status():
+    print("database connection failed")
 
 
 @login_manager.user_loader
@@ -118,7 +122,7 @@ def findBuoys():
     lat = request.args.get('lat', type=float)
     long = request.args.get('long', type=float)
     coord = (lat, long)
-    data = haversineCalc(coord)
+    data = haversineCalc(coord, db)
     return json.dumps(data)
 
 
