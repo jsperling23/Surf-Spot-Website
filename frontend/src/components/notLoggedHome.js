@@ -39,7 +39,7 @@ function NotLoggedHome() {
     useEffect(() => {
         const findNear = async () => {
             if (latitude !== null && longitude !== null) {
-                const response = await fetch(`http://127.0.0.1:5000/findBuoys?lat=${latitude}&long=${longitude}`)
+                const response = await fetch(`/findBuoys?lat=${latitude}&long=${longitude}`)
                 const data = await response.text()
                 const parsedData = JSON.parse(data)
 

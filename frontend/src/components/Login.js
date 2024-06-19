@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 //login function
 async function loginFunc(username, password) {
-    const login = await fetch(`http://localhost:5000/login`,
+    const login = await fetch(`/login`,
         {method: 'POST',
         headers: {
             'Content-Type': 'application/json'},

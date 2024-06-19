@@ -1,7 +1,6 @@
 # import libraries
 import os
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 import json
 from flask_login import LoginManager, login_user, logout_user, login_required
 
@@ -14,7 +13,6 @@ from dbClass import Database
 # setup flask server and login
 app = Flask(__name__)
 app.secret_key = os.getenv("secretKey")
-CORS(app, supports_credentials=True)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
