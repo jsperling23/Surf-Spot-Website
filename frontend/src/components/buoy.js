@@ -111,9 +111,9 @@ function Buoy () {
     //HTML to be returned by function, depends on if the fetch promise returned 
     return (
         <div>
-          <header class="buoyHeader">Current Data For Station {buoyId}</header>
+          <header className="buoyHeader">Current Data For Station {buoyId}</header>
           {buoyData ? ( 
-            <div class="buoyData">
+            <div className="buoyData">
               <table >
                 <thead>
                   <tr>

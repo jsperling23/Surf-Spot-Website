@@ -73,7 +73,7 @@ def createUser():
         return jsonify({"result": "Internal service error"}), 500
 
 
-@app.route("/auth", methods=["GET"])
+@app.route("/auth", methods=["GET", "OPTIONS"])
 @login_required
 def auth():
     """

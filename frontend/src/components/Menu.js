@@ -1,8 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-function Menu( { onClick }, { logged }) {
+function Menu( { onClick , logged }) {
   //logout function
+  console.log(logged)
   const logout = async () => {
     const logout = await fetch('http://localhost:5000/logout', {
       method: "GET",

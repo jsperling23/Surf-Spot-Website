@@ -9,16 +9,17 @@ import Menu from './Menu';
 function Homepage() {
     console.log("component rendered")
 
-    const [loggedStatus, setStatus] = useState(false);
+    const [loggedStatus, setStatus] = useState();
     const navigate = useNavigate();
 
     //If user is logged in, continue, else, redirect to the login page
     const checkAuth = async () => {
-        const auth = await fetch(`http://localhost:5000/auth`, {method: 'GET', credentials: 'include'});
+        const auth = await fetch(`http://localhost:5000/auth`, {credentials: 'include'});
         if (auth.status === 200) {
             setStatus(true)
-        } else {navigate('/')}
-    }
+        };
+    };
+    
     useEffect(() => {
         checkAuth()
     }, [])
@@ -29,7 +30,7 @@ function Homepage() {
     
     return (
         <>
-            <div>{ <Menu onClick = { handleLogout }/> }</div>
+            <div>{ <Menu onClick = { handleLogout } logged = { loggedStatus }/> }</div>
             <div>{ loggedStatus ? <LoggedHome/> : <NotLoggedHome/>}</div>
         </>
     )

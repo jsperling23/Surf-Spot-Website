@@ -64,6 +64,7 @@ function LoggedHome() {
                         <legend>Enter Buoy Station and Press Submit</legend>
                         <label htmlFor='buoyID'>Enter your Buoy ID here:</label>
                         <input
+                        id='buoyID'
                         className='buoyInput'
                         type='text'
                         maxLength='6'
@@ -83,23 +84,25 @@ function LoggedHome() {
                     {nearby ? (
                     <form onSubmit={ handleSubmit }>
                         <table className="nearbyTable">
-                            <tr>
-                                <td>Distance(miles)</td>
-                                <td>Station ID</td>
-                                <td>Description</td>
-                            </tr>
-                            {Object.entries(nearby).map(([key, value]) => (
-                                <tr key={key}>
-                                    <td>{parseFloat(key).toFixed(2)}</td>
-                                    <td>{value[0]}</td>
-                                    <td>{value[1]}</td>
-                                    <td>
-                                        <button value={ value[0] } 
-                                            onClick={ e => setBuoy(e.target.value)} type="submit">Use Station: {value[0]}
-                                        </button>
-                                    </td>
+                            <tbody>
+                                <tr>
+                                    <td>Distance(miles)</td>
+                                    <td>Station ID</td>
+                                    <td>Description</td>
                                 </tr>
-                            ))}
+                                {Object.entries(nearby).map(([key, value]) => (
+                                    <tr key={key}>
+                                        <td>{parseFloat(key).toFixed(2)}</td>
+                                        <td>{value[0]}</td>
+                                        <td>{value[1]}</td>
+                                        <td>
+                                            <button value={ value[0] } 
+                                                onClick={ e => setBuoy(e.target.value)} type="submit">Use Station: {value[0]}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
                         </table>
                     </form>
                         ) : null}         
