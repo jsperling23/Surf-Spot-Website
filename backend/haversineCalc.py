@@ -2,7 +2,12 @@ from haversine import haversine
 from dbClass import Database
 
 
-def haversineCalc(coord: tuple, db) -> dict:
+def haversineCalc(coord: tuple, db: object) -> dict:
+    """
+    This function takes in a coordinate and a database object and
+    finds the great arc length between the closest buoys and returns them
+    in a dictionary.
+    """
     gal = []
     while len(gal) < 5:
         # query Buoys entity and find all the buoys that have coordinates

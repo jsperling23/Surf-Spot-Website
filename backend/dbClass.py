@@ -44,10 +44,13 @@ class Database:
             else:
                 print(err)
 
-    def executeQuery(self, query: str, params: list) -> list:
+    def executeQuery(self, query: str, params: list, fetch: str = "all") -> \
+            list:
         """
         Takes in a query and its parameters and returns the resulting list
-        or an empty list if the query was unsuccessful
+        or an empty list if the query was unsuccessful. The fetch string is
+        default to all but if you want to use the fetchone method, then
+        set fetch to "one".
         """
         data = []
         try:
@@ -55,8 +58,17 @@ class Database:
             cnx = self._cnxpool.get_connection()
             print("connection successful")
             cursor = cnx.cursor()
+            print("Parameters:  ", params)
             cursor.execute(query, params)
-            data = cursor.fetchall()
+
+            # what to do with query depending on questions
+            if query.startswith(("INSERT", "UPDATE", "DELETE")):
+                cnx.commit()
+                print("Transaction committed")
+            elif fetch == "all":
+                data = cursor.fetchall()
+            else:
+                data = cursor.fetchone()
         # error handling
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

@@ -27,7 +27,7 @@ def load_user(user_id):
     """
     handle user login/authentication
     """
-    return User.get(user_id)
+    return User.get(user_id, db)
 
 
 @app.route("/login", methods=['POST'])
@@ -39,7 +39,7 @@ def login():
     formData = request.json
     username = formData['username']
     password = formData['password']
-    user = User.get(username)
+    user = User.get(username, db)
     if user:
         user.verifyPassword(password)
         if user.is_authenticated():
@@ -62,7 +62,7 @@ def createUser():
     username = formData['username']
     password = formData['password']
     print("username: ", username, "password: ", password)
-    creation = User.createUser(username, password)
+    creation = User.createUser(username, password, db)
     if creation[0] is True:
         return jsonify({"result": "Account creation successful"}), 200
     elif creation[0] is False and creation[1] == 1:
