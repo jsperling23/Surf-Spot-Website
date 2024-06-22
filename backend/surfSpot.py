@@ -1,61 +1,46 @@
-import mysql.connector
-from mysql.connector import errorcode
-import os
-from dotenv import load_dotenv
-
-
 class SurfSpot:
     def __init__(self, spotID: int):
         self._spotID = spotID
+        self._spotName = None
+        self._buoy1 = None
+        self._buoy2 = None
 
-    @staticmethod
-    def createSpot(userID: int, firstBuoyID: int = None, secondBuoyID: int
-                   = None) -> bool:
+    def getSpot(self, spotID: int, db: object) -> None:
         """
-        Creates a new surf spot and adds it to the database. Returns True if
-        successful and False otherwise.
+        Gets all the information for a surf spot
         """
-        result = None
-        load_dotenv()
-        dbUser = os.getenv("dbUser")
-        dbPassword = os.getenv("dbPassword")
-        dbName = os.getenv("dbName")
-        dbHost = os.getenv("dbHost")
-        try:
-            # connect to database
-            cnx = mysql.connector.connect(user=dbUser,
-                                          password=dbPassword,
-                                          host=dbHost,
-                                          database=dbName)
-            # print("mysql Connection Successful")
-            cursor = cnx.cursor()
-            if firstBuoyID is None:
-                query = "INSERT INTO SurfSpots (userID) VALUES (%s)"
-                params = (userID)
-            elif secondBuoyID is None:
-                query = "INSERT INTO SurfSpots (userID, firstBuoyID) VALUES (\
-                        %s, %s)"
-                params = (userID, firstBuoyID)
-            else:
-                query = "INSERT INTO SurfSpots (userID, firstBuoyID, \
-                         secondBuoyID) VALUES (%s, %s, %s)"
-                params = (userID, secondBuoyID)
+        query = "SELECT * FROM SurfSpots WHERE spotID = %s"
+        params = [spotID]
+        data = db.executeQuery(query, params)
+        self._spotName = data[1]
+        if len(data) == 4:
+            self._buoy1 = data[2]
+            self._buoy2 = data[3]
+        elif len(data) == 3:
+            self._buoy1 = data[2]
+        return
 
-            cursor.execute(query, params)
-            result = True
 
-        # error handling
-        except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                print("Something is wrong with your user name or password")
-            elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                print("Database does not exist")
-            else:
-                print(err)
-            result = False
+def createSpot(userID: int, db: object,  firstBuoyID: int = None,
+               secondBuoyID: int = None) -> bool:
+    """
+    Creates a new surf spot and adds it to the database. Returns True if
+    successful and False otherwise.
+    """
+    if firstBuoyID is None:
+        query = "INSERT INTO SurfSpots (userID) VALUES (%s)"
+        params = (userID)
+    elif secondBuoyID is None:
+        query = "INSERT INTO SurfSpots (userID, firstBuoyID) VALUES (\
+                %s, %s)"
+        params = (userID, firstBuoyID)
+    else:
+        query = "INSERT INTO SurfSpots (userID, firstBuoyID, \
+                    secondBuoyID) VALUES (%s, %s, %s)"
+        params = (userID, secondBuoyID)
 
-        # close connections
-        finally:
-            cursor.close()
-            cnx.close()
-        return result
+    response = db.executeQuery(query, params)
+    if not response:
+        return False
+
+    return True
