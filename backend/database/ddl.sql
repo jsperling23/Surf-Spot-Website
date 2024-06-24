@@ -21,7 +21,9 @@ CREATE TABLE Users(
 
 CREATE TABLE SurfSpots(
     spotID int AUTO_INCREMENT NOT NULL UNIQUE,
-    userID int NULL,
+    userID int NOT NULL,
+    latitude DECIMAL(10,3) NOT NULL,
+    longitude DECIMAL(10,3) NOT NULL,
     firstBuoyID int NULL,
     secondBuoyID int NULL,
     PRIMARY KEY (spotID),

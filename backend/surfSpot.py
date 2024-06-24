@@ -1,3 +1,6 @@
+from dbClass import Database
+
+
 class SurfSpot:
     def __init__(self, spotID: int):
         self._spotID = spotID
@@ -21,26 +24,37 @@ class SurfSpot:
         return
 
 
-def createSpot(userID: int, db: object,  firstBuoyID: int = None,
-               secondBuoyID: int = None) -> bool:
+def createSpot(userID: int, db: object, latitude: float, longitude: float,
+               firstBuoyID: int = None, secondBuoyID: int = None) -> bool:
     """
     Creates a new surf spot and adds it to the database. Returns True if
     successful and False otherwise.
     """
     if firstBuoyID is None:
-        query = "INSERT INTO SurfSpots (userID) VALUES (%s)"
-        params = (userID)
+        query = "INSERT INTO SurfSpots (userID, latitude, longitude) VALUES (\
+                (SELECT userID FROM Users WHERE userID = %s), %s, %s)"
+        params = (userID, latitude, longitude)
     elif secondBuoyID is None:
-        query = "INSERT INTO SurfSpots (userID, firstBuoyID) VALUES (\
-                %s, %s)"
-        params = (userID, firstBuoyID)
+        query = "INSERT INTO SurfSpots (userID, latitude, longitude,\
+                firstBuoyID) VALUES ((SELECT userID FROM Users WHERE\
+                userID = %s), %s, %s, (SELECT buoyID FROM Buoys\
+                WHERE buoyID = %s))"
+        params = (userID, latitude, longitude, firstBuoyID)
     else:
-        query = "INSERT INTO SurfSpots (userID, firstBuoyID, \
-                    secondBuoyID) VALUES (%s, %s, %s)"
-        params = (userID, secondBuoyID)
+        query = "INSERT INTO SurfSpots (userID,  latitude, longitude,\
+                firstBuoyID, secondBuoyID) VALUES ((SELECT userID FROM Users\
+                WHERE userID = %s), %s, %s, (SELECT buoyID FROM Buoys WHERE\
+                buoyID = %s), (SELECT buoyID FROM Buoys WHERE buoyID = %s))"
+        params = (userID, latitude, longitude, firstBuoyID, secondBuoyID)
 
     response = db.executeQuery(query, params)
     if not response:
         return False
 
     return True
+
+
+if __name__ == "__main__":
+    db = Database()
+    d = createSpot(1, db, 420.32, 345.23, 1, 2)
+    print(d)
