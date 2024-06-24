@@ -22,6 +22,7 @@ CREATE TABLE Users(
 CREATE TABLE SurfSpots(
     spotID int AUTO_INCREMENT NOT NULL UNIQUE,
     userID int NOT NULL,
+    name VARCHAR(50) NOT NULL,
     latitude DECIMAL(10,3) NOT NULL,
     longitude DECIMAL(10,3) NOT NULL,
     firstBuoyID int NULL,
@@ -29,20 +30,16 @@ CREATE TABLE SurfSpots(
     PRIMARY KEY (spotID),
     FOREIGN KEY (firstBuoyID) REFERENCES Buoys(buoyID) ON DELETE SET NULL,
     FOREIGN KEY (secondBuoyID) REFERENCES Buoys(buoyID) ON DELETE SET NULL,
-    FOREIGN KEY (userID) REFERENCES Users(userID) ON DELETE SET NULL
+    FOREIGN KEY (userID) REFERENCES Users(userID) ON DELETE CASCADE
 );
 
 CREATE TABLE IdealConditions(
     conditionID int AUTO_INCREMENT NOT NULL UNIQUE,
     spotID INT NOT NULL,
-    windUpper INT NOT NULL,
-    windLower INT NOT NULL,
-    windDirectionUpper int NOT NULL,
-    windDirectionLower int NOT NULL,
-    swellHeightUpper DECIMAL(4, 2) NOT NULL,
-    swellHeightLower DECIMAL(4, 2) NOT NULL,
-    swellPeriodUpper INT NOT NULL,
-    swellPeriodLower INT NOT NULL,
+    windDirection VARCHAR(10) NOT NULL,
+    swellDirection VARCHAR(10) NOT NULL,
+    waveSize VARCHAR(30) NOT NULL,
+    swellPeriod VARCHAR(10) NOT NULL,
     tideUpper DECIMAL(3, 1) NOT NULL,
     tideLower DECIMAL(3, 1) NOT NULL,
     description VARCHAR(255),
@@ -56,6 +53,7 @@ CREATE TABLE SavedSessions(
     windDirection INT NOT NULL,
     swellHeight DECIMAL(4, 2) NOT NULL,
     swellPeriod INT NOT NULL,
+    swellDirection INT NOT NULL,
     tide DECIMAL(3, 1) NOT NULL,
     swellActivity VARCHAR(15),
     tideDirection VARCHAR(15),
