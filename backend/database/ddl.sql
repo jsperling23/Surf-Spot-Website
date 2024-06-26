@@ -35,14 +35,13 @@ CREATE TABLE SurfSpots(
 
 CREATE TABLE IdealConditions(
     conditionID int AUTO_INCREMENT NOT NULL UNIQUE,
-    spotID INT NOT NULL,
+    spotID INT NOT NULL UNIQUE,
     windDirection VARCHAR(10) NOT NULL,
     swellDirection VARCHAR(10) NOT NULL,
     waveSize VARCHAR(30) NOT NULL,
     swellPeriod VARCHAR(10) NOT NULL,
     tideUpper DECIMAL(3, 1) NOT NULL,
     tideLower DECIMAL(3, 1) NOT NULL,
-    description VARCHAR(255),
     FOREIGN KEY (spotID) REFERENCES SurfSpots(spotID) ON DELETE CASCADE
 );
 

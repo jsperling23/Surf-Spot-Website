@@ -21,15 +21,16 @@ class SurfSpot:
         query = "SELECT * FROM SurfSpots WHERE spotID = %s"
         params = [spotID]
         data = self._db.executeQuery(query, params, "one")
-        self._userID = data[1]
-        self._spotName = data[2]
-        self._latitude = data[3]
-        self._longitude = data[4]
-        if len(data) == 7:
-            self._buoy1 = data[5]
-            self._buoy2 = data[6]
-        elif len(data) == 6:
-            self._buoy1 = data[4]
+        if data:
+            self._userID = data[1]
+            self._spotName = data[2]
+            self._latitude = data[3]
+            self._longitude = data[4]
+            if len(data) == 7:
+                self._buoy1 = data[5]
+                self._buoy2 = data[6]
+            elif len(data) == 6:
+                self._buoy1 = data[4]
         return
 
     def getSpot(self) -> dict:
@@ -75,12 +76,45 @@ class SurfSpot:
         return True
 
     def getIdeal(self) -> dict:
-        pass
+        """
+        Gets the ideal conditions and returns them in a dictionary. If any
+        issues pop up an empty dictionary is returned.
+        """
+        query = "SELECT * FROM IdealConditions WHERE spotID = %s"
+        params = [self._spotID]
+        db = self._db
+        data = db.executeQuery(query, params, "one")
+        ideal = {}
+        if data:
+            ideal["conditionID"] = data[0]
+            ideal["spotID"] = data[1]
+            ideal["windDir"] = data[2]
+            ideal["swellDir"] = data[3]
+            ideal["waveSize"] = data[4]
+            ideal["period"] = data[5]
+            ideal["tideMax"] = data[6]
+            ideal["tideMin"] = data[7]
+        return ideal
 
-    def createIdeal(self, spotID: int, windDir: str, swellDir: str,
+    def createIdeal(self, windDir: str, swellDir: str,
                     size: str, period: str, tideMax: float,
                     tideMin: float) -> bool:
-        pass
+        """
+        Creates an entry in the IdealConditions table for a spots
+        ideal conditions. Only one entry allowed per spot. This
+        function returns True if successful and False otherwise.
+        """
+        query = "INSERT INTO IdealConditions (spotID, windDirection,\
+                swellDirection, waveSize, swellPeriod, tideUpper, tideLower)\
+                VALUES ((SELECT spotID FROM SurfSpots WHERE\
+                spotID = %s), %s, %s, %s, %s, %s, %s)"
+        params = [self._spotID, windDir, swellDir, size, period, tideMax,
+                  tideMin]
+        result = db.executeQuery(query, params)
+        if not result:
+            return False
+
+        return True
 
     def updateIdeal(self, spotID: int, windDir: str, swellDir: str,
                     size: str, period: str, tideMax: float,
@@ -134,10 +168,8 @@ if __name__ == "__main__":
     # d = createSpot(1, db, "billys", 420.32, 345.23)
     # e = createSpot(1, db, "Tommy's", 420.32, 345.23, 1)
     # f = createSpot(1, db, "Bommie's", 420.32, 345.23, 1, 2)
-    spot = SurfSpot(10, db)
-    print(spot.getSpot())
-    spot.updateSpot("Slop Rock", 642.3, -23.2, 3, 6)
-    print(spot.getSpot())
+    spot = SurfSpot(8, db)
+    print(spot.getIdeal())
 
-    SurfSpot(12, db)
+    # SurfSpot(12, db)
     # SurfSpot(13, db)
