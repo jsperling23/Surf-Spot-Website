@@ -22,6 +22,7 @@ if not db.status():
     print("database connection failed")
 
 
+# Authenication and User routes
 @login_manager.user_loader
 def load_user(user_id):
     """
@@ -99,7 +100,7 @@ def buoyRequest():
     """
     route for getting buoy data for the station ID passed in the get request.
     To use this route the following request URL should be utilized:
-    http://localhost:5000/request?stationID=<string>
+    /request?stationID=<string>
     """
 
     # get buoy data
@@ -110,12 +111,13 @@ def buoyRequest():
     return json.dumps(data)
 
 
+# Buoy data and surf spot routes
 @app.route("/findBuoys")
 def findBuoys():
     """
     route to get the nearest buoys to a particular set of coordinates
     URL to use by frontend:
-    http://127.0.0.1:5000/findBuoys?lat=<float>&long=<float>
+    /findBuoys?lat=<float>&long=<float>
     """
     lat = request.args.get('lat', type=float)
     long = request.args.get('long', type=float)

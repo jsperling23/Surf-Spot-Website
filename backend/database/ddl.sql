@@ -48,6 +48,7 @@ CREATE TABLE IdealConditions(
 CREATE TABLE SavedSessions(
     sessionID INT AUTO_INCREMENT NOT NULL UNIQUE,
     spotID INT NOT NULL,
+    date DATE NOT NULL,
     windSpeed INT NOT NULL,
     windDirection INT NOT NULL,
     swellHeight DECIMAL(4, 2) NOT NULL,
