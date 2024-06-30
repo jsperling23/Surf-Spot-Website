@@ -1,7 +1,6 @@
 # import libraries
 import os
 from flask import Flask, request, jsonify
-import json
 from flask_login import LoginManager, login_user, logout_user, login_required
 
 # import backend functions
@@ -9,6 +8,7 @@ from buoyParser import parseBuoy
 from haversineCalc import haversineCalc
 from user import User
 from dbClass import Database
+from surfSpot import SurfSpot, createSpot
 
 # setup flask server and login
 app = Flask(__name__)
@@ -106,9 +106,9 @@ def buoyRequest():
     # get buoy data
     param = request.args.get("stationID")
     data = parseBuoy(param)
-
+    print(data)
     # return data to frontend
-    return json.dumps(data)
+    return jsonify(data)
 
 
 # Buoy data and surf spot routes
@@ -123,7 +123,29 @@ def findBuoys():
     long = request.args.get('long', type=float)
     coord = (lat, long)
     data = haversineCalc(coord, db)
-    return json.dumps(data)
+    return jsonify(data)
+
+
+@app.route("/surfSpot", methods=["GET", "POST"])
+def spotRoute():
+    """
+    Route for getting a surf spot and creating a new surf spot.
+    GET: Returns a JSON object of a surf spot or an empty object
+    if it doesn't exist. /surfSpot?spotID=<int>
+    POST: Takes in form data from the request and returns 200
+    if successful or a 409 error otherwise.
+    """
+    if request.method == "GET":
+        spotID = request.args.get('spotID', type=int)
+        spot = SurfSpot(spotID, db)
+        data = {}
+        if spot.isValid:
+            data = spot.getSpot()
+            if data["buoy1"]:
+                data["buoy1"] = parseBuoy(data["buoy1"])
+            if data["buoy2"]:
+                data["buoy2"] = parseBuoy(data["buoy2"])
+        return jsonify(data)
 
 
 if __name__ == "__main__":

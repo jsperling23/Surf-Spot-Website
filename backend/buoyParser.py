@@ -1,4 +1,3 @@
-import json
 import requests
 
 
@@ -23,7 +22,7 @@ def parseBuoy(stationID) -> dict:
         if firstRow[i] in dataDict:
             dataDict[firstRow[i]] = content[2].split()[i]
 
-    return json.dumps(dataDict)
+    return dataDict
 
 
 def buoyRequest(stationID) -> (tuple):

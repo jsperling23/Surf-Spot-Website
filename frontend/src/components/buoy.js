@@ -21,7 +21,7 @@ function Buoy () {
     async function getBuoyData (stationID) {
       const response = await fetch(`/request?stationID=${stationID}`)
       const data = await response.json()
-      return JSON.parse(data)
+      return data
     }; 
 
     //Call the getBuoyData function and set the state of buoyData

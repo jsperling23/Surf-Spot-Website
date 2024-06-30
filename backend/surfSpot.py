@@ -11,6 +11,7 @@ class SurfSpot:
         self._buoy1 = None
         self._buoy2 = None
         self._db = db
+        self.isValid = False
         self.initSpot(self._spotID)
 
     def initSpot(self, spotID: int) -> None:
@@ -26,6 +27,7 @@ class SurfSpot:
             self._spotName = data[2]
             self._latitude = data[3]
             self._longitude = data[4]
+            self.isValid = True
             if len(data) == 7:
                 self._buoy1 = data[5]
                 self._buoy2 = data[6]
@@ -39,7 +41,23 @@ class SurfSpot:
         a surf spot. It will return an empty dictionary if something
         goes wrong,
         """
-        query = "SELECT * FROM SurfSpots WHERE spotID = %s"
+        if self._buoy2 is not None:
+            query = "SELECT SurfSpots.spotID, SurfSpots.userID,\
+                    SurfSpots.name, SurfSpots.latitude, SurfSpots.longitude,\
+                    buoy1.stationID AS buoy1, buoy2.stationID AS buoy2 FROM\
+                    SurfSpots INNER JOIN Buoys AS buoy1 ON\
+                    SurfSpots.firstBuoyID = buoy1.buoyID INNER JOIN Buoys AS\
+                    buoy2 ON SurfSpots.secondBuoyID = buoy2.buoyID WHERE\
+                    SurfSpots.spotID = %s"
+        elif self._buoy1 is not None:
+            query = "SELECT SurfSpots.spotID, SurfSpots.userID,\
+                    SurfSpots.name, SurfSpots.latitude, SurfSpots.longitude,\
+                    buoy1.stationID AS buoy1, SurfSpots.secondBuoyID FROM\
+                    SurfSpots INNER JOIN Buoys AS buoy1 ON\
+                    SurfSpots.firstBuoyID = buoy1.buoyID WHERE\
+                    SurfSpots.spotID = %s"
+        else:
+            query = "SELECT * FROM SurfSpots WHERE spotID = %s"
         params = [self._spotID]
         spot = {}
         db = self._db
@@ -51,7 +69,7 @@ class SurfSpot:
             spot["latitude"] = data[3]
             spot["longitude"] = data[4]
             spot["buoy1"] = data[5]
-            spot["buoy 2"] = data[6]
+            spot["buoy2"] = data[6]
         return spot
 
     def updateSpot(self, name: str, latitude: float,
@@ -239,7 +257,8 @@ if __name__ == "__main__":
     # f = createSpot(1, db, "Bommie's", 420.32, 345.23, 1, 2)
 
     spot = SurfSpot(1, db)
-    print(spot.getSessions())
+    print(spot.getSpot())
+    # print(spot.getSessions())
     # spot.createIdeal("NW", "W", "Overhead", "Long", 3.00, -1.00)
     # spot.saveSession("2024-06-28", 15, 270, 6.5, 16, 270,
     # 3.9, "increasing", "slack", "Holy hell it was macking")
