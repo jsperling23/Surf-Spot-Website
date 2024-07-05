@@ -8,7 +8,7 @@ from buoyParser import parseBuoy
 from haversineCalc import haversineCalc
 from user import User
 from dbClass import Database
-from surfSpot import SurfSpot, createSpot
+from surfSpot import SurfSpot  # , createSpot
 
 # setup flask server and login
 app = Flask(__name__)
@@ -132,7 +132,7 @@ def spotRoute():
     Route for getting a surf spot and creating a new surf spot.
     GET: Returns a JSON object of a surf spot or an empty object
     if it doesn't exist. /surfSpot?spotID=<int>
-    POST: Takes in form data from the request and returns 200
+    POST: Takes in form data from the request and returns 201
     if successful or a 409 error otherwise.
     """
     if request.method == "GET":
@@ -146,6 +146,23 @@ def spotRoute():
             if data["buoy2"]:
                 data["buoy2"] = parseBuoy(data["buoy2"])
         return jsonify(data)
+
+    if request.method == "POST":
+        formData = request.json
+        spotID = formData["spotID"]
+        name = formData["name"]
+        latitude = formData["latitude"]
+        longitude = formData["longitude"]
+        firstBuoyID = formData["firstBuoyID"]
+        secondBuoyID = formData["secondBuoyID"]
+        spot = SurfSpot(spotID, db)
+        if spot.isValid:
+            result = spot.updateSpot(name, latitude, longitude,
+                                     firstBuoyID, secondBuoyID)
+            if result:
+                return jsonify({"result": "Spot Updated"}), 201
+            return jsonify({"result": "Error occurred"}), 409
+        return jsonify({"result": "Spot doesn't exist"}), 409
 
 
 if __name__ == "__main__":

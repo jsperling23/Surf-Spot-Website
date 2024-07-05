@@ -70,6 +70,9 @@ class Database:
                 data = cursor.fetchall()
             else:
                 data = cursor.fetchone()
+            cursor.close()
+            cnx.close()
+
         # error handling
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -80,8 +83,4 @@ class Database:
                 print(err)
 
         # close connections
-        finally:
-            cursor.close()
-            cnx.close()
-
         return data

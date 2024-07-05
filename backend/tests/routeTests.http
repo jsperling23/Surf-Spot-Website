@@ -1,0 +1,24 @@
+@hostname = http://localhost:5000
+
+// request for /SurfSpot
+GET {{hostname}}/surfSpot?spotID=1
+
+###
+
+POST http://localhost:5000/surfSpot
+Content-Type: application/json
+
+{
+    "spotID": 1,
+    "name": "Sloppity Rockity",
+    "latitude": 123.4, 
+    "longitude": 69.42,
+    "firstBuoyID": 7,
+    "secondBuoyID": 242
+}
+
+###
+
+// request for /request
+GET {{hostname}}/request?stationID=46237
+
