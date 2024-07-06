@@ -5,7 +5,7 @@ GET {{hostname}}/surfSpot?spotID=1
 
 ###
 
-POST http://localhost:5000/surfSpot
+PUT {{hostname}}/surfSpot
 Content-Type: application/json
 
 {
@@ -19,6 +19,26 @@ Content-Type: application/json
 
 ###
 
+DELETE {{hostname}}/surfSpot?spotID=18
+
+###
+
+POST {{hostname}}/surfSpot
+Content-Type: application/json
+
+{
+    "userID": 1,
+    "name": "Tizzle Tots",
+    "latitude": 37.54,
+    "longitude": 122.51,
+    "firstBuoyID": null,
+    "secondBuoyID": null
+}
+
+###
+
+
 // request for /request
 GET {{hostname}}/request?stationID=46237
+
 

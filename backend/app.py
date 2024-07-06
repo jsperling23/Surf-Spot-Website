@@ -8,7 +8,7 @@ from buoyParser import parseBuoy
 from haversineCalc import haversineCalc
 from user import User
 from dbClass import Database
-from surfSpot import SurfSpot  # , createSpot
+from surfSpot import SurfSpot, createSpot
 
 # setup flask server and login
 app = Flask(__name__)
@@ -126,7 +126,7 @@ def findBuoys():
     return jsonify(data)
 
 
-@app.route("/surfSpot", methods=["GET", "POST"])
+@app.route("/surfSpot", methods=["GET", "PUT", "POST", "DELETE"])
 def spotRoute():
     """
     Route for getting a surf spot and creating a new surf spot.
@@ -147,7 +147,7 @@ def spotRoute():
                 data["buoy2"] = parseBuoy(data["buoy2"])
         return jsonify(data)
 
-    if request.method == "POST":
+    if request.method == "PUT":
         formData = request.json
         spotID = formData["spotID"]
         name = formData["name"]
@@ -161,8 +161,30 @@ def spotRoute():
                                      firstBuoyID, secondBuoyID)
             if result:
                 return jsonify({"result": "Spot Updated"}), 201
-            return jsonify({"result": "Error occurred"}), 409
-        return jsonify({"result": "Spot doesn't exist"}), 409
+        return jsonify({"result": "Error occurred"}), 409
+
+    if request.method == "DELETE":
+        spotID = request.args.get('spotID', type=int)
+        spot = SurfSpot(spotID, db)
+        if spot.isValid:
+            result = spot.deleteSpot()
+            if result:
+                return jsonify({"result": "Spot Deleted"}), 201
+        return jsonify({"result": "Error occurred"}), 409
+
+    if request.method == "POST":
+        formData = request.json
+        userID = formData["userID"]
+        name = formData["name"]
+        latitude = formData["latitude"]
+        longitude = formData["longitude"]
+        firstBuoyID = formData["firstBuoyID"]
+        secondBuoyID = formData["secondBuoyID"]
+        result = createSpot(userID, db, name, latitude, longitude,
+                            firstBuoyID, secondBuoyID)
+        if result:
+            return jsonify({"result": "Spot Created"}), 201
+        return jsonify({"result": "Error occurred"}), 409
 
 
 if __name__ == "__main__":
