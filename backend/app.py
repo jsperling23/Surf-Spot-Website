@@ -187,5 +187,53 @@ def spotRoute():
         return jsonify({"result": "Error occurred"}), 409
 
 
+@app.route("/ideal", methods=["GET", "POST", "PUT"])
+def ideal():
+    """
+    Route that can be used to read, create, or update the ideal
+    conditions for a surf spot. Returns 201 if successful and 401
+    otherwise.
+    """
+    if request.method == "GET":
+        spotID = request.args.get("spotID")
+        spot = SurfSpot(spotID, db)
+        data = {}
+        if spot.isValid:
+            data = spot.getIdeal()
+        return jsonify(data)
+
+    if request.method == "POST":
+        formData = request.json
+        spotID = formData["spotID"]
+        spot = SurfSpot(spotID, db)
+        windDir = formData["windDir"]
+        swellDir = formData["swellDir"]
+        size = formData["size"]
+        period = formData["period"]
+        tideMax = formData["tideMax"]
+        tideMin = formData["tideMin"]
+        result = spot.createIdeal(windDir, swellDir, size, period, tideMax,
+                                  tideMin)
+        if result:
+            return jsonify({"result": "Ideal Created"}), 201
+        return jsonify({"result": "Error occurred"}), 409
+
+    if request.method == "PUT":
+        formData = request.json
+        spotID = formData["spotID"]
+        spot = SurfSpot(spotID, db)
+        windDir = formData["windDir"]
+        swellDir = formData["swellDir"]
+        size = formData["size"]
+        period = formData["period"]
+        tideMax = formData["tideMax"]
+        tideMin = formData["tideMin"]
+        result = spot.updateIdeal(windDir, swellDir, size, period, tideMax,
+                                  tideMin)
+        if result:
+            return jsonify({"result": "Ideal updated"}), 201
+        return jsonify({"result": "Error occurred"}), 409
+
+
 if __name__ == "__main__":
     app.run(port=5000, debug=True)

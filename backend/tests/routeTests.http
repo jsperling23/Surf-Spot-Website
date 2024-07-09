@@ -37,6 +37,39 @@ Content-Type: application/json
 
 ###
 
+GET {{hostname}}/ideal?spotID=1
+
+###
+
+POST {{hostname}}/ideal
+Content-Type: application/json
+
+{
+    "spotID": 1,
+    "windDir": "ssw",
+    "swellDir": "nw",
+    "size": "Double Overhead",
+    "period": "long",
+    "tideMax": 2.3,
+    "tideMin": 4.2
+}
+
+###
+
+PUT {{hostname}}/ideal
+Content-Type: application/json
+
+{
+    "spotID": 1,
+    "windDir": "nnw",
+    "swellDir": "SW",
+    "size": "Head High",
+    "period": "Medium",
+    "tideMax": 2.0,
+    "tideMin": 5.0
+}
+
+###
 
 // request for /request
 GET {{hostname}}/request?stationID=46237
