@@ -46,7 +46,8 @@ def login():
         if user.is_authenticated():
             login_user(user)
             print("User Login Successful!")
-            return jsonify({"result": "Login Successful"}), 200
+            return jsonify({"result": "Login Successful",
+                            "userID": user._userID}), 200
     return jsonify({"result": "Login Failed"}), 401
 
 
@@ -232,6 +233,43 @@ def ideal():
                                   tideMin)
         if result:
             return jsonify({"result": "Ideal updated"}), 201
+        return jsonify({"result": "Error occurred"}), 409
+
+
+@app.route('/saveSession', methods=["GET", "POST"])
+def savedSessions():
+    """
+    Route to save a surf session or get previously saved
+    surf sessions. POST returns a 201 if successful and a 409
+    error code otherwise
+    """
+    if request.method == "GET":
+        spotID = request.args.get("spotID")
+        spot = SurfSpot(spotID, db)
+        data = {}
+        if spot.isValid:
+            data = spot.getSessions()
+        return data
+
+    if request.method == "POST":
+        formData = request.json
+        spotID = formData["spotID"]
+        spot = SurfSpot(spotID, db)
+        date = formData["date"]
+        windSpd = formData["windSpd"]
+        windDir = formData["windDir"]
+        swellHgt = formData["swellHgt"]
+        swellPer = formData["swellPer"]
+        swellDir = formData["swellDir"]
+        tide = formData["tide"]
+        swellAct = formData["swellAct"]
+        tideDir = formData["tideDir"]
+        description = formData["description"]
+        result = spot.saveSession(date, windSpd, windDir, swellHgt, swellPer,
+                                  swellDir, tide, swellAct, tideDir,
+                                  description)
+        if result:
+            return jsonify({"result": "Session saved"}), 201
         return jsonify({"result": "Error occurred"}), 409
 
 

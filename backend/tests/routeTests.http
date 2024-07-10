@@ -71,6 +71,30 @@ Content-Type: application/json
 
 ###
 
+GET {{hostname}}/saveSession?spotID=1
+
+###
+
+POST {{hostname}}/saveSession
+Content-Type: application/json
+
+{
+    "spotID": 1,
+    "date": "2024-04-20",
+    "windSpd": 12,
+    "windDir": 322,
+    "swellHgt": 3.2,
+    "swellPer": 18,
+    "swellDir": 322,
+    "tide": 3.2,
+    "swellAct": "increasing",
+    "tideDir": "decreasing",
+    "description": "really good day, absolutely pumping"
+}
+
+###
+
+
 // request for /request
 GET {{hostname}}/request?stationID=46237
 

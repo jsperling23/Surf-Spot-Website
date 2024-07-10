@@ -15,7 +15,10 @@ async function loginFunc(username, password) {
         credentials: 'include'
         }
     );
+    const data = await login.json()
     console.log(login.headers);
+    sessionStorage.setItem("userID", data.userID)
+    console.log("user ID: ", sessionStorage.getItem("userID"))
     return login.status
 };
 
