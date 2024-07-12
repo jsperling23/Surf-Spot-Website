@@ -250,14 +250,26 @@ def createSpot(userID: int, db: object, name: str, latitude: float,
     return True
 
 
+def getAllSpots(userID: int, db: object) -> dict:
+    query = "SELECT spotID FROM SurfSpots WHERE userID = %s"
+    data = db.executeQuery(query, [userID])
+    spots = {}
+    if data:
+        for spot in data:
+            current = SurfSpot(spot[0], db)
+            print(current)
+            spots[spot[0]] = current.getSpot()
+    return spots
+
+
 if __name__ == "__main__":
     db = Database()
     # d = createSpot(1, db, "billys", 420.32, 345.23)
     # e = createSpot(1, db, "Tommy's", 420.32, 345.23, 1)
     # f = createSpot(1, db, "Bommie's", 420.32, 345.23, 1, 2)
-
-    spot = SurfSpot(1, db)
-    print(spot.getSpot())
+    print(getAllSpots(1, db))
+    # spot = SurfSpot(1, db)
+    # print(spot.getSpot())
     # print(spot.getSessions())
     # spot.createIdeal("NW", "W", "Overhead", "Long", 3.00, -1.00)
     # spot.saveSession("2024-06-28", 15, 270, 6.5, 16, 270,

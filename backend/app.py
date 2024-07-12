@@ -8,7 +8,7 @@ from buoyParser import parseBuoy
 from haversineCalc import haversineCalc
 from user import User
 from dbClass import Database
-from surfSpot import SurfSpot, createSpot
+from surfSpot import SurfSpot, createSpot, getAllSpots
 
 # setup flask server and login
 app = Flask(__name__)
@@ -137,15 +137,8 @@ def spotRoute():
     if successful or a 409 error otherwise.
     """
     if request.method == "GET":
-        spotID = request.args.get('spotID', type=int)
-        spot = SurfSpot(spotID, db)
-        data = {}
-        if spot.isValid:
-            data = spot.getSpot()
-            if data["buoy1"]:
-                data["buoy1"] = parseBuoy(data["buoy1"])
-            if data["buoy2"]:
-                data["buoy2"] = parseBuoy(data["buoy2"])
+        userID = request.args.get('userID', type=int)
+        data = getAllSpots(userID, db)
         return jsonify(data)
 
     if request.method == "PUT":
