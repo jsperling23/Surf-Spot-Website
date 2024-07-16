@@ -56,3 +56,18 @@ body {
   height:150px;
   display:block;
 }
+
+.surfSpotTable {
+  border: solid 2px;
+  border-color: #C1FEF3;
+  width: 500px;             
+  height: 20px;
+  margin-bottom: 10px;
+}
+
+.surfExpand {
+  text-align: right;
+}
+
+
+

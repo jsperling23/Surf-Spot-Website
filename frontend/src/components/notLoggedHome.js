@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -54,8 +54,7 @@ function NotLoggedHome() {
     return (
         <> 
             <article> 
-                <p>If you're a new user, give yourself at least 5 minutes to find and enter your buoy station ID.</p>
-                <p>Choose your buoy from a list of buoys here: <a href = "https://www.ndbc.noaa.gov/to_station.shtml">List of NOAA Buoys (requires knowledge of buoy locations)</a> or <a href='https://www.ndbc.noaa.gov/'>Map of NOAA Buoys (requires knowledge of using maps)</a></p>
+                <p>Choose your buoy from a list of buoys here: <a href = "https://www.ndbc.noaa.gov/to_station.shtml">List of NOAA Buoys</a> or <a href='https://www.ndbc.noaa.gov/'>Map of NOAA Buoys</a></p>
                 <p>Get buoy data by filling out the form below after finding the station ID of your buoy of choice </p>
                 <form onSubmit={ handleSubmit } className="buoyInput">
                     <fieldset>

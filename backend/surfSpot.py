@@ -259,6 +259,7 @@ def getAllSpots(userID: int, db: object) -> dict:
             current = SurfSpot(spot[0], db)
             print(current)
             spots[spot[0]] = current.getSpot()
+            spots[spot[0]]["ideal"] = current.getIdeal()
     return spots
 
 
