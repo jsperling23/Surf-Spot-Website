@@ -9,9 +9,12 @@ def haversineCalc(coord: tuple, db: object) -> dict:
     in a dictionary.
     """
     gal = []
-    while len(gal) < 5:
+    count = 0
+    while len(gal) < 5 and count < 10:
         # query Buoys entity and find all the buoys that have coordinates
         # within 5% of given coordinates
+        print(count)
+        count += 1
         lowLat = coord[0] * 0.95
         upperLat = coord[0] * 1.05
         lowLong = coord[1] * 1.05

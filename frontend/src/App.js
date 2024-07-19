@@ -5,7 +5,7 @@ import Homepage from './components/Homepage';
 import Buoy from './components/buoy';
 import CreateUser from './components/CreateUser';
 import Login from './components/Login';
-import SurfSpots from './components/SurfSpot'
+import CreateSpot from './components/CreateSpot'
 
 function App() {
   return (
@@ -15,7 +15,8 @@ function App() {
         <main>
           <section>
             <Routes>
-              <Route path = "/spots" element = { <SurfSpots /> }/>
+
+              <Route path = "/createSpot" element = { <CreateSpot /> }/>
               <Route path = "/login" element = { <Login /> } />
               <Route path = "/" element = { <Homepage /> }/>
               <Route path = "/buoyDisplay" element = { <Buoy />}/>

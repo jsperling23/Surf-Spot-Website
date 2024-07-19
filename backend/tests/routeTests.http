@@ -45,13 +45,13 @@ POST {{hostname}}/ideal
 Content-Type: application/json
 
 {
-    "spotID": 1,
-    "windDir": "ssw",
-    "swellDir": "nw",
-    "size": "Double Overhead",
-    "period": "long",
-    "tideMax": 2.3,
-    "tideMin": 4.2
+    "spotID": 3,
+    "windDir": "nw",
+    "swellDir": "sw",
+    "size": "Head High",
+    "period": "Short",
+    "tideMax": 1.0,
+    "tideMin": 2.5
 }
 
 ###

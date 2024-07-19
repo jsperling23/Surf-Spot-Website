@@ -1,5 +1,7 @@
 import React from 'react';
 import {  useState, useEffect } from 'react';
+import Map from './Map'
+
 
 function Spot( {surfSpot} ) {
     const [collapse, setCollapse] = useState(false)
@@ -57,6 +59,7 @@ function SurfSpots() {
           setUser(userID);
           console.log(userID);
         }
+
       }, []);
     
     // once the user is updated, call the getSpots function to get data
@@ -76,8 +79,10 @@ function SurfSpots() {
         };
     }, [user]);
 
+    
     return (
         <div>
+            <Map/>
             { 
                 spotData ? 
                 Object.values(spotData).map((spot, key) => (
