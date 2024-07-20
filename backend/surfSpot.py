@@ -218,30 +218,31 @@ class SurfSpot:
 
 
 def createSpot(userID: int, db: object, name: str, latitude: float,
-               longitude: float, firstBuoyID: int = None,
-               secondBuoyID: int = None) -> bool:
+               longitude: float, firstStationID: str = None,
+               secondStationID: str = None) -> bool:
     """
     Creates a new surf spot and adds it to the database. Returns True if
     successful and False otherwise.
     """
-    if firstBuoyID is None:
+    if firstStationID is None:
         query = "INSERT INTO SurfSpots (userID, name, latitude, longitude)\
                 VALUES ((SELECT userID FROM Users WHERE userID = %s), %s,\
                 %s, %s)"
         params = (userID, name, latitude, longitude)
-    elif secondBuoyID is None:
+    elif secondStationID is None:
         query = "INSERT INTO SurfSpots (userID, name, latitude, longitude,\
                 firstBuoyID) VALUES ((SELECT userID FROM Users WHERE\
                 userID = %s), %s, %s, %s, (SELECT buoyID FROM Buoys\
-                WHERE buoyID = %s))"
-        params = (userID, name, latitude, longitude, firstBuoyID)
+                WHERE stationID = %s))"
+        params = (userID, name, latitude, longitude, firstStationID)
     else:
         query = "INSERT INTO SurfSpots (userID, name, latitude, longitude,\
                 firstBuoyID, secondBuoyID) VALUES ((SELECT userID FROM Users\
                 WHERE userID = %s), %s, %s, %s, (SELECT buoyID FROM Buoys\
-                WHERE buoyID = %s), (SELECT buoyID FROM Buoys\
-                WHERE buoyID = %s))"
-        params = (userID, name, latitude, longitude, firstBuoyID, secondBuoyID)
+                WHERE stationID = %s), (SELECT buoyID FROM Buoys\
+                WHERE stationID = %s))"
+        params = (userID, name, latitude, longitude, firstStationID,
+                  secondStationID)
 
     response = db.executeQuery(query, params)
     if not response:

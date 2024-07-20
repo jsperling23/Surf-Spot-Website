@@ -1,12 +1,9 @@
 import React from 'react';
 import {  useState, useEffect } from 'react';
 
-function Nearby( { lat, long }) {
-    const [nearby, setNearby] = useState(null);
-
+function Nearby( { lat, long, nearby, setNearby}) {
     useEffect(() => {
         const findNear = async () => {
-            console.log("i'm here")
             if (lat !== 0 && long !== 0) {
                 const response = await fetch(`/findBuoys?lat=${lat}&long=${long}`)
                 const data = await response.text()

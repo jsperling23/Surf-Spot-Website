@@ -1,6 +1,6 @@
 import React from 'react';
 import {  useState, useEffect } from 'react';
-import Map from './Map'
+import HomeMap from './HomeMap'
 
 
 function Spot( {surfSpot} ) {
@@ -11,7 +11,9 @@ function Spot( {surfSpot} ) {
                 <tbody>
                     <tr>
                             <td> {surfSpot["name"]}</td>
-                            <td className = "surfExpand"> <button onClick = {() => {setCollapse(!collapse)}}> + </button></td>
+                            <td className = "surfExpand" colSpan='5'> 
+                                <button onClick = {() => {setCollapse(!collapse)}}> + </button>
+                            </td>
                         </tr>
                         { collapse ? 
                         <>
@@ -82,7 +84,7 @@ function SurfSpots() {
     
     return (
         <div>
-            <Map/>
+            <HomeMap/>
             { 
                 spotData ? 
                 Object.values(spotData).map((spot, key) => (

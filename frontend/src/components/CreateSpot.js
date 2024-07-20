@@ -1,8 +1,9 @@
 import React from 'react';
 import {  useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Map from './Map';
+import Map from './CreateMap';
 import Nearby from './NearbyBuoys'
+import CreateMap from './CreateMap';
 
 function CreateSpot() {
     const [lat, setLat] = useState(0);
@@ -11,6 +12,7 @@ function CreateSpot() {
     const [buoy1, setBuoy1] = useState(null);
     const [buoy2, setBuoy2] = useState(null);
     const [user, setUser] = useState(null)
+    const [nearby, setNearby] = useState(null)
     const navigate = useNavigate();
 
     // Get the userID from session storage upon load
@@ -52,7 +54,7 @@ function CreateSpot() {
     };
     return(
         <>
-            <Map setLat = { setLat } setLong = { setLong }/>
+            <CreateMap setLat = { setLat } setLong = { setLong } nearby = { nearby} />
             <form onSubmit={ handleSubmit }>
                 <fieldset>
                     <legend>Enter latitude and longitude and fill out the following fields</legend>
@@ -105,7 +107,9 @@ function CreateSpot() {
                     <button type='submit'>Submit</button>
                 </fieldset>
             </form>
-            <div>{lat != 0 && long !=0 ? <Nearby lat = { lat } long = { long }/> : <></>}</div>
+            <div>{lat != 0 && long !=0 ? <Nearby lat = { lat } long = { long } 
+                  setNearby = { setNearby } nearby = { nearby }/> : <></>}
+            </div>
             
         </>
     )
