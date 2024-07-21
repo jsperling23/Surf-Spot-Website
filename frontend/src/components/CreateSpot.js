@@ -11,8 +11,9 @@ function CreateSpot() {
     const [spotName, setName] = useState(null);
     const [buoy1, setBuoy1] = useState(null);
     const [buoy2, setBuoy2] = useState(null);
-    const [user, setUser] = useState(null)
-    const [nearby, setNearby] = useState(null)
+    const [user, setUser] = useState(null);
+    const [nearby, setNearby] = useState(null);
+    const [spotID, setSpotID] = useState(null);
     const navigate = useNavigate();
 
     // Get the userID from session storage upon load
@@ -43,15 +44,18 @@ function CreateSpot() {
             credentials: 'include'
             });
             if (createSpot.status === 201) {
-                console.log(createSpot.status)
+                const response = await createSpot.json()
+                console.log(response)
+                setSpotID(response["spotID"])
                 alert("Surf Spot Created!")
-                navigate('/');
+                navigate('/createIdeal', {state: { spotID: response["spotID"] }});
             } else {
                 const responseData = await createSpot.json();
                 console.log(responseData)
                 alert(responseData.result)
             };
     };
+
     return(
         <>
             <CreateMap setLat = { setLat } setLong = { setLong } nearby = { nearby} />
@@ -107,7 +111,7 @@ function CreateSpot() {
                     <button type='submit'>Submit</button>
                 </fieldset>
             </form>
-            <div>{lat != 0 && long !=0 ? <Nearby lat = { lat } long = { long } 
+            <div>{lat !== 0 && long !== 0 ? <Nearby lat = { lat } long = { long } 
                   setNearby = { setNearby } nearby = { nearby }/> : <></>}
             </div>
             

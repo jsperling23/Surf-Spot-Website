@@ -177,7 +177,8 @@ def spotRoute():
         result = createSpot(userID, db, name, latitude, longitude,
                             firstBuoyID, secondBuoyID)
         if result:
-            return jsonify({"result": "Spot Created"}), 201
+            return jsonify({"result": "Spot Created",
+                            "spotID": result[1]}), 201
         return jsonify({"result": "Error occurred"}), 409
 
 

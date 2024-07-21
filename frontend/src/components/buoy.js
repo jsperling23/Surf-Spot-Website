@@ -15,7 +15,7 @@ function Buoy () {
     const [waterUnit, setWaterUnit] = useState("°F")
     const [water, setWater] = useState(null)
     const [wind, setWind] = useState(null)
-    const buoyId = location.state?.buoy
+    const buoyId = location.state.buoy
 
     //Function to fetch the buoy data
     async function getBuoyData (stationID) {

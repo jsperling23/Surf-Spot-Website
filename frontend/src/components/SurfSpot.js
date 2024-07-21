@@ -3,8 +3,25 @@ import {  useState, useEffect } from 'react';
 import HomeMap from './HomeMap'
 
 
-function Spot( {surfSpot} ) {
+function Spot( { surfSpot } ) {
     const [collapse, setCollapse] = useState(false)
+    const spotID = surfSpot["spotID"]
+
+    async function handleDelete(e) {
+        e.preventDefault();
+        const decision = window.confirm("Are you sure you want to delete this spot?");
+        if (!decision) return;
+        const deleteSpot = await fetch(`/surfSpot?spotID=${spotID}`,
+            {method: 'DELETE', credentials: 'include'});
+            if (deleteSpot.status === 201) {
+                const response = await deleteSpot.json()
+                console.log(response)
+            } else {
+                const responseData = await deleteSpot.json();
+                console.log(responseData)
+                alert(responseData.result)
+            };
+    };
     return (
         <>
             <table className = "surfSpotTable">
@@ -33,7 +50,11 @@ function Spot( {surfSpot} ) {
                                 <td><strong>Ideal Size: </strong>{surfSpot["ideal"]["waveSize"]}</td>
                                 <td><strong>Ideal Wind: </strong>{surfSpot["ideal"]["windDir"]}</td>
                             </tr>
-                            
+                            <tr>
+                                <td colSpan='5'> 
+                                    <button onClick = { handleDelete }> Delete Spot </button>
+                                </td>
+                            </tr>   
                         </> : <></>
                         }
                 </tbody>     

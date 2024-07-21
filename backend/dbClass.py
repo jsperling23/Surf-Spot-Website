@@ -64,7 +64,7 @@ class Database:
             # what to do with query depending on questions
             if query.startswith(("INSERT", "UPDATE", "DELETE")):
                 cnx.commit()
-                data = ["success"]
+                data = ["success", cursor.lastrowid]
                 print("Transaction committed")
             elif fetch == "all":
                 data = cursor.fetchall()

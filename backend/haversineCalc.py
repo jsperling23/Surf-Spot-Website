@@ -56,7 +56,7 @@ def haversineCalc(coord: tuple, db: object) -> dict:
         sortedDict = {}
         for value in gal:
             sortedDict[value[0]] = [value[1], value[2], value[3], value[4]]
-            if len(sortedDict) >= 10:
+            if len(sortedDict) >= 20:
                 break
     print(sortedDict)
     return sortedDict

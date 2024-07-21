@@ -5,7 +5,8 @@ import Homepage from './components/Homepage';
 import Buoy from './components/buoy';
 import CreateUser from './components/CreateUser';
 import Login from './components/Login';
-import CreateSpot from './components/CreateSpot'
+import CreateSpot from './components/CreateSpot';
+import CreateIdeal from './components/CreateIdeal';
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
         <main>
           <section>
             <Routes>
-
+              <Route path = "/createIdeal" element = { <CreateIdeal /> }/> 
               <Route path = "/createSpot" element = { <CreateSpot /> }/>
               <Route path = "/login" element = { <Login /> } />
               <Route path = "/" element = { <Homepage /> }/>

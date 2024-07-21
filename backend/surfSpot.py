@@ -248,7 +248,7 @@ def createSpot(userID: int, db: object, name: str, latitude: float,
     if not response:
         return False
 
-    return True
+    return True, response[1]
 
 
 def getAllSpots(userID: int, db: object) -> dict:
@@ -267,11 +267,12 @@ def getAllSpots(userID: int, db: object) -> dict:
 if __name__ == "__main__":
     db = Database()
     # d = createSpot(1, db, "billys", 420.32, 345.23)
+    # print(d)
     # e = createSpot(1, db, "Tommy's", 420.32, 345.23, 1)
     # f = createSpot(1, db, "Bommie's", 420.32, 345.23, 1, 2)
-    print(getAllSpots(1, db))
-    # spot = SurfSpot(1, db)
-    # print(spot.getSpot())
+    # print(getAllSpots(1, db))
+    spot = SurfSpot(8, db)
+    print(spot.deleteSpot())
     # print(spot.getSessions())
     # spot.createIdeal("NW", "W", "Overhead", "Long", 3.00, -1.00)
     # spot.saveSession("2024-06-28", 15, 270, 6.5, 16, 270,
