@@ -8,7 +8,8 @@ from buoyParser import parseBuoy
 from haversineCalc import haversineCalc
 from user import User
 from dbClass import Database
-from surfSpot import SurfSpot, createSpot, getAllSpots
+from surfSpot import SurfSpot, createSpot, getAllSpots, getAllSessions, \
+     deleteSession
 
 # setup flask server and login
 app = Flask(__name__)
@@ -230,7 +231,7 @@ def ideal():
         return jsonify({"result": "Error occurred"}), 409
 
 
-@app.route('/saveSession', methods=["GET", "POST"])
+@app.route('/Sessions', methods=["GET", "POST", "DELETE"])
 def savedSessions():
     """
     Route to save a surf session or get previously saved
@@ -238,12 +239,9 @@ def savedSessions():
     error code otherwise
     """
     if request.method == "GET":
-        spotID = request.args.get("spotID")
-        spot = SurfSpot(spotID, db)
-        data = {}
-        if spot.isValid:
-            data = spot.getSessions()
-        return data
+        userID = request.args.get('userID', type=int)
+        data = getAllSessions(userID, db)
+        return jsonify(data)
 
     if request.method == "POST":
         formData = request.json
@@ -264,6 +262,13 @@ def savedSessions():
                                   description)
         if result:
             return jsonify({"result": "Session saved"}), 201
+        return jsonify({"result": "Error occurred"}), 409
+
+    if request.method == "DELETE":
+        sessionID = request.args.get('sessionID', type=int)
+        result = deleteSession(sessionID, db)
+        if result:
+            return jsonify({"result": "Session Deleted"}), 201
         return jsonify({"result": "Error occurred"}), 409
 
 

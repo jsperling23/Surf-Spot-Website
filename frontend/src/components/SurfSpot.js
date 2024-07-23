@@ -1,9 +1,10 @@
 import React from 'react';
 import {  useState, useEffect } from 'react';
 import HomeMap from './HomeMap'
+import Sessions from './Sessions'
 
 
-function Spot( { surfSpot } ) {
+function Spot( { surfSpot, updateSpots } ) {
     const [collapse, setCollapse] = useState(false)
     const spotID = surfSpot["spotID"]
 
@@ -15,7 +16,8 @@ function Spot( { surfSpot } ) {
             {method: 'DELETE', credentials: 'include'});
             if (deleteSpot.status === 201) {
                 const response = await deleteSpot.json()
-                console.log(response)
+                console.log(response);
+                updateSpots(spotID);
             } else {
                 const responseData = await deleteSpot.json();
                 console.log(responseData)
@@ -75,6 +77,15 @@ function SurfSpots() {
         return data
     };
 
+    function updateSpots(id) {
+        setData(() => {
+            const updated = {...spotData};
+            console.log("Now deleted: ", updated[id])
+            delete updated[id]
+            return updated
+        })
+    };
+
     // Get the userID from session storage upon load
     useEffect(() => {
         const userID = sessionStorage.getItem("userID");
@@ -91,7 +102,6 @@ function SurfSpots() {
             try {
                 const data = await getSpots(user)
                 setData(data)
-                console.log(data)
             } catch (error) {
                 console.error(error)
             };
@@ -104,19 +114,25 @@ function SurfSpots() {
 
     
     return (
-        <div>
-            <HomeMap/>
-            { 
-                spotData ? 
-                Object.values(spotData).map((spot, key) => (
-                    <Spot 
-                        surfSpot = { spot }
-                        key = { key }
-                    />
-                )):
-                <p>...Loading</p> 
-            }
-        </div>
+        
+            <div className='surfStuff'>
+                <HomeMap/>
+                <Sessions/>             
+                    <div>
+                        { 
+                            spotData ? 
+                            Object.values(spotData).map((spot, key) => (
+                                <Spot 
+                                    surfSpot = { spot }
+                                    key = { key }
+                                    updateSpots = { updateSpots }
+                                />
+                            )):
+                            <p>...Loading</p> 
+                        }
+                    </div>
+            </div>
+        
     )
 };
 

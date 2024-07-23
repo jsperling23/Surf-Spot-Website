@@ -48,6 +48,7 @@ CREATE TABLE IdealConditions(
 CREATE TABLE SavedSessions(
     sessionID INT AUTO_INCREMENT NOT NULL UNIQUE,
     spotID INT NOT NULL,
+    userID int NOT NULL,
     date DATE NOT NULL,
     windSpeed INT NOT NULL,
     windDirection INT NOT NULL,
@@ -58,5 +59,6 @@ CREATE TABLE SavedSessions(
     swellActivity VARCHAR(15),
     tideDirection VARCHAR(15),
     description VARCHAR(255),
-    FOREIGN KEY (spotID) REFERENCES SurfSpots(spotID) ON DELETE CASCADE
+    FOREIGN KEY (spotID) REFERENCES SurfSpots(spotID) ON DELETE CASCADE,
+    FOREIGN KEY (userID) REFERENCES Users(userID) ON DELETE CASCADE
 );

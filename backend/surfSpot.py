@@ -173,13 +173,14 @@ class SurfSpot:
         """
         Saves a session to the SavedSessions Table
         """
-        query = "INSERT INTO SavedSessions (spotID, date, windSpeed,\
+        query = "INSERT INTO SavedSessions (spotID, userID, date, windSpeed,\
                 windDirection, swellHeight, swellPeriod, swellDirection, tide,\
                 swellActivity, tideDirection, description) VALUES ((SELECT\
-                spotID FROM SurfSpots WHERE spotID = %s), %s, %s, %s, %s, %s,\
-                %s, %s, %s, %s, %s)"
-        params = [self._spotID, date, windSpd, windDir, swellHgt, swellPer,
-                  swellDir, tide, swellAct, tideDir, description]
+                spotID FROM SurfSpots WHERE spotID = %s), (SELECT userID FROM\
+                Users WHERE userID = %s),%s, %s, %s, %s, %s, %s, %s, %s, %s,\
+                %s)"
+        params = [self._spotID, self._userID, date, windSpd, windDir, swellHgt,
+                  swellPer, swellDir, tide, swellAct, tideDir, description]
         db = self._db
         result = db.executeQuery(query, params)
         if not result:
@@ -215,6 +216,20 @@ class SurfSpot:
             }
 
         return sessions
+
+
+def deleteSession(sessionID: int, db: object) -> bool:
+    """
+    Deletes a session from the session table. Returns True if
+    successful and False otherwise.
+    """
+    query = "DELETE FROM SavedSessions WHERE SessionID = %s"
+    params = [sessionID]
+    result = db.executeQuery(query, params)
+
+    if not result:
+        return False
+    return True
 
 
 def createSpot(userID: int, db: object, name: str, latitude: float,
@@ -264,16 +279,47 @@ def getAllSpots(userID: int, db: object) -> dict:
     return spots
 
 
+def getAllSessions(userID: int, db: object) -> dict:
+    query = "SELECT SavedSessions.sessionID, SavedSessions.date,\
+            SavedSessions.windSpeed, SavedSessions.windDirection,\
+            SavedSessions.swellHeight, SavedSessions.swellPeriod,\
+            SavedSessions.swellDirection, SavedSessions.tide,\
+            SavedSessions.swellActivity, SavedSessions.tideDirection,\
+            SavedSessions.description, SurfSpots.name FROM SavedSessions INNER\
+            JOIN SurfSpots ON SavedSessions.spotID = SurfSpots.spotID WHERE\
+            SavedSessions.userID = %s"
+    data = db.executeQuery(query, [userID])
+    sessions = {}
+    if data:
+        for sesh in data:
+            sessions[sesh[0]] = {
+                "date": sesh[1],
+                "windSpeed": sesh[2],
+                "windDirection": sesh[3],
+                "swellHeight": sesh[4],
+                "swellPeriod": sesh[5],
+                "swellDirection": sesh[6],
+                "tide": sesh[7],
+                "swellActivity": sesh[8],
+                "tideDirecton": sesh[9],
+                "description": sesh[10],
+                "name": sesh[11],
+                "sessionID": sesh[0]
+            }
+    return sessions
+
+
 if __name__ == "__main__":
     db = Database()
+    # getAllSessions(1, db)
     # d = createSpot(1, db, "billys", 420.32, 345.23)
     # print(d)
     # e = createSpot(1, db, "Tommy's", 420.32, 345.23, 1)
     # f = createSpot(1, db, "Bommie's", 420.32, 345.23, 1, 2)
     # print(getAllSpots(1, db))
-    spot = SurfSpot(8, db)
-    print(spot.deleteSpot())
-    # print(spot.getSessions())
+    # spot = SurfSpot(1, db)
+    # print(spot.deleteSpot())
+    print(deleteSession(1, db))
     # spot.createIdeal("NW", "W", "Overhead", "Long", 3.00, -1.00)
     # spot.saveSession("2024-06-28", 15, 270, 6.5, 16, 270,
     # 3.9, "increasing", "slack", "Holy hell it was macking")
