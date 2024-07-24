@@ -65,6 +65,18 @@ body {
   margin-bottom: 10px;
 }
 
+.surfEditTable {
+  border: solid 2px;
+  border-color: #C1FEF3;
+  width: 500px;             
+  height: 20px;
+  margin-bottom: 10px;
+}
+
+.surfEditTable input {
+  width: 50px;
+}
+
 .surfExpand {
   text-align: right;
 }
@@ -81,3 +93,19 @@ body {
   gap: 20px;
  }
 
+ .Menu {
+  margin-bottom: 20px;
+ }
+ .nav-link {
+    background: #005353;
+    color: #C1FEF3;
+    padding: 5px 10px;
+    margin-right: 10px;
+    border-radius: 2px;
+    border: 2px solid white;
+}
+
+.nav-link:hover {
+  color: black;
+  font-weight: bold;
+}

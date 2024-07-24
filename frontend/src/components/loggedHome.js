@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SurfSpots from './SurfSpot'
+import SurfSpots from './SurfSpot';
+import Sessions from './Sessions'
 
 
 function LoggedHome() {
@@ -55,11 +56,9 @@ function LoggedHome() {
     return (
         <>
             <article> 
-                <p>
-                    My Surf Spots
-                </p>
-                <div>
+                <div className='surfStuff'>
                     <SurfSpots/>
+                    <Sessions/>
                 </div>
                 <p>Find Nearby Buoys</p>
                 <div>

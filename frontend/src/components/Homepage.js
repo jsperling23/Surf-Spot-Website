@@ -30,7 +30,7 @@ function Homepage() {
     
     return (
         <>
-            <div>{ <Menu onClick = { handleLogout } logged = { loggedStatus }/> }</div>
+            <div className='Menu'>{ <Menu onClick = { handleLogout } logged = { loggedStatus }/> }</div>
             <div>{ loggedStatus ? <LoggedHome/> : <NotLoggedHome/>}</div>
         </>
     )

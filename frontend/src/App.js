@@ -7,15 +7,17 @@ import CreateUser from './components/CreateUser';
 import Login from './components/Login';
 import CreateSpot from './components/CreateSpot';
 import CreateIdeal from './components/CreateIdeal';
+import CreateSession from './components/CreateSession';
 
 function App() {
   return (
     <>
       <BrowserRouter>
-        <header className = "top">Buoy Data Finder</header>
+        <header className = "top">My Surf Journal</header>
         <main>
           <section>
             <Routes>
+              <Route path = "/createSession" element = { <CreateSession/> } />
               <Route path = "/createIdeal" element = { <CreateIdeal /> }/> 
               <Route path = "/createSpot" element = { <CreateSpot /> }/>
               <Route path = "/login" element = { <Login /> } />

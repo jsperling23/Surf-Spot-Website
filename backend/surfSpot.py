@@ -73,18 +73,18 @@ class SurfSpot:
         return spot
 
     def updateSpot(self, name: str, latitude: float,
-                   longitude: float, firstBuoyID: int = None,
-                   secondBuoyID: int = None) -> bool:
+                   longitude: float, firstStation: str = None,
+                   secondStation: str = None) -> bool:
         """
         Updates a surf spot in the database. Returns True if successful and
         False otherwise.
         """
         query = "UPDATE SurfSpots SET name = %s, latitude = %s,\
                 longitude = %s, firstBuoyID = (SELECT buoyID \
-                FROM Buoys WHERE buoyID = %s), secondBuoyID = \
-                (SELECT buoyID FROM Buoys WHERE buoyID = %s)\
+                FROM Buoys WHERE stationID = %s), secondBuoyID = \
+                (SELECT buoyID FROM Buoys WHERE stationID = %s)\
                 WHERE spotID = %s"
-        params = [name, latitude, longitude, firstBuoyID, secondBuoyID,
+        params = [name, latitude, longitude, firstStation, secondStation,
                   self._spotID]
         db = self._db
         result = db.executeQuery(query, params)

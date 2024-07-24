@@ -54,7 +54,7 @@ function Session({ session, updateSessions }) {
                         </tr>
                         <tr>
                             <td colSpan='5'> 
-                                <button onClick = { handleDelete }> Delete Spot </button>
+                                <button onClick = { handleDelete }> Delete Session </button>
                             </td>
                         </tr>
                     </> : <></>

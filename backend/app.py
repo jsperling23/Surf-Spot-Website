@@ -129,6 +129,7 @@ def findBuoys():
 
 
 @app.route("/surfSpot", methods=["GET", "PUT", "POST", "DELETE"])
+@login_required
 def spotRoute():
     """
     Route for getting a surf spot and creating a new surf spot.
@@ -136,6 +137,8 @@ def spotRoute():
     if it doesn't exist. /surfSpot?spotID=<int>
     POST: Takes in form data from the request and returns 201
     if successful or a 409 error otherwise.
+    PUT: Edits both the ideal conditions and spot data. Avoids
+    multiple requests to the backend this way.
     """
     if request.method == "GET":
         userID = request.args.get('userID', type=int)
@@ -144,18 +147,34 @@ def spotRoute():
 
     if request.method == "PUT":
         formData = request.json
+
         spotID = formData["spotID"]
         name = formData["name"]
         latitude = formData["latitude"]
         longitude = formData["longitude"]
-        firstBuoyID = formData["firstBuoyID"]
-        secondBuoyID = formData["secondBuoyID"]
+        firstStation = formData["firstStation"]
+        secondStation = formData["secondStation"]
+
+        windDir = formData["windDir"]
+        swellDir = formData["swellDir"]
+        size = formData["size"]
+        period = formData["period"]
+        tideMax = formData["tideMax"]
+        tideMin = formData["tideMin"]
         spot = SurfSpot(spotID, db)
         if spot.isValid:
-            result = spot.updateSpot(name, latitude, longitude,
-                                     firstBuoyID, secondBuoyID)
-            if result:
+            result1 = spot.updateSpot(name, latitude, longitude,
+                                      firstStation, secondStation)
+            result2 = spot.updateIdeal(windDir, swellDir, size, period,
+                                       tideMax, tideMin)
+            if result1 and result2:
                 return jsonify({"result": "Spot Updated"}), 201
+            elif not result1 and result2 is True:
+                return jsonify({"result": "Error occurred during\
+                                spot update"}), 409
+            elif not result2 and result1 is True:
+                return jsonify({"result": "Error occurred during\
+                                ideal update"}), 409
         return jsonify({"result": "Error occurred"}), 409
 
     if request.method == "DELETE":
@@ -184,6 +203,7 @@ def spotRoute():
 
 
 @app.route("/ideal", methods=["GET", "POST", "PUT"])
+@login_required
 def ideal():
     """
     Route that can be used to read, create, or update the ideal
@@ -232,6 +252,7 @@ def ideal():
 
 
 @app.route('/Sessions', methods=["GET", "POST", "DELETE"])
+@login_required
 def savedSessions():
     """
     Route to save a surf session or get previously saved

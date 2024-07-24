@@ -16,13 +16,16 @@ function Menu( { onClick , logged }) {
   };
   if (logged === true) {
     return (
-      <NavLink to = "/" onClick = { logout }> Logout </NavLink>
+      <>
+        <NavLink to = "/" onClick = { logout } className="nav-link" >Logout</NavLink>
+        <NavLink to = "/createSpot" className="nav-link" >Create New Spot</NavLink>
+      </>
     );
   } else {
     return (
       <div>
-        <NavLink to = "/login"> Login </NavLink>
-        <NavLink to = "/CreateUser"> Create Account </NavLink>
+        <NavLink to = "/login" className="nav-link" > Login </NavLink>
+        <NavLink to = "/CreateUser" className="nav-link" > Create Account </NavLink>
       </div>
     )
   }
