@@ -24,8 +24,8 @@ function Menu( { onClick , logged }) {
   } else {
     return (
       <div>
-        <NavLink to = "/login" className="nav-link" > Login </NavLink>
-        <NavLink to = "/CreateUser" className="nav-link" > Create Account </NavLink>
+        <NavLink to = "/login" className="nav-link" >Login</NavLink>
+        <NavLink to = "/CreateUser" className="nav-link" >Create Account</NavLink>
       </div>
     )
   }

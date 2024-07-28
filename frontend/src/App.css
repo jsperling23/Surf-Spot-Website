@@ -107,5 +107,7 @@ body {
 
 .nav-link:hover {
   color: black;
+  background-color: white;
   font-weight: bold;
+  border-color: black;
 }

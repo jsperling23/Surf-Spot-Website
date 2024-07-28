@@ -187,6 +187,25 @@ class SurfSpot:
             return False
         return True
 
+    def editSession(self, date: str, windSpd: int, windDir: int,
+                    swellHgt: float, swellPer: int, swellDir: int, tide: float,
+                    swellAct: str, tideDir: str, description: str) -> bool:
+        """
+        Edits a session in the SavedSessions Table
+        """
+        query = "UPDATE SavedSessions SET date = %s, windSpeed = %s,\
+                windDirection = %s, swellHeight = %s, swellPeriod = %s,\
+                swellDirection = %s, tide = %s, swellActivity = %s,\
+                tideDirection = %s, description = %s WHERE spotID = %s"
+        params = [date, windSpd, windDir, swellHgt,
+                  swellPer, swellDir, tide, swellAct, tideDir, description,
+                  self._spotID]
+        db = self._db
+        result = db.executeQuery(query, params)
+        if not result:
+            return False
+        return True
+
     def getSessions(self) -> dict:
         """
         Returns all sessions in a dictionary where the key is the date and
@@ -285,9 +304,9 @@ def getAllSessions(userID: int, db: object) -> dict:
             SavedSessions.swellHeight, SavedSessions.swellPeriod,\
             SavedSessions.swellDirection, SavedSessions.tide,\
             SavedSessions.swellActivity, SavedSessions.tideDirection,\
-            SavedSessions.description, SurfSpots.name FROM SavedSessions INNER\
-            JOIN SurfSpots ON SavedSessions.spotID = SurfSpots.spotID WHERE\
-            SavedSessions.userID = %s"
+            SavedSessions.description, SurfSpots.name, SurfSpots.spotID FROM\
+            SavedSessions INNER JOIN SurfSpots ON SavedSessions.spotID =\
+            SurfSpots.spotID WHERE SavedSessions.userID = %s"
     data = db.executeQuery(query, [userID])
     sessions = {}
     if data:
@@ -304,7 +323,8 @@ def getAllSessions(userID: int, db: object) -> dict:
                 "tideDirecton": sesh[9],
                 "description": sesh[10],
                 "name": sesh[11],
-                "sessionID": sesh[0]
+                "sessionID": sesh[0],
+                "spotID": sesh[12]
             }
     return sessions
 

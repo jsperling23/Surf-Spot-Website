@@ -67,8 +67,7 @@ function Spot( { surfSpot, updateSpots, handleUpdate } ) {
     };
 
     function handleCancel() {
-        setEdit(false)
-         
+        setEdit(false) 
     };
 
     return (
@@ -296,6 +295,7 @@ function SurfSpots() {
             try {
                 const data = await getSpots(user)
                 setData(data)
+                console.log("spotData Request: ", data)
             } catch (error) {
                 console.error(error)
             };
@@ -310,7 +310,7 @@ function SurfSpots() {
     return (
         
             <div>
-                <HomeMap/>             
+                <HomeMap spotData = { spotData }/>             
                     <div>
                         { spotData ? 
                             Object.values(spotData).map((spot, key) => (

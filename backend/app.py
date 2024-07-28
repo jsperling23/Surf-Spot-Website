@@ -251,7 +251,7 @@ def ideal():
         return jsonify({"result": "Error occurred"}), 409
 
 
-@app.route('/Sessions', methods=["GET", "POST", "DELETE"])
+@app.route('/Sessions', methods=["GET", "POST", "DELETE", "PUT"])
 @login_required
 def savedSessions():
     """
@@ -283,6 +283,27 @@ def savedSessions():
                                   description)
         if result:
             return jsonify({"result": "Session saved"}), 201
+        return jsonify({"result": "Error occurred"}), 409
+
+    if request.method == "PUT":
+        formData = request.json
+        spotID = formData["spotID"]
+        spot = SurfSpot(spotID, db)
+        date = formData["date"]
+        windSpd = formData["windSpd"]
+        windDir = formData["windDir"]
+        swellHgt = formData["swellHgt"]
+        swellPer = formData["swellPer"]
+        swellDir = formData["swellDir"]
+        tide = formData["tide"]
+        swellAct = formData["swellAct"]
+        tideDir = formData["tideDir"]
+        description = formData["description"]
+        result = spot.editSession(date, windSpd, windDir, swellHgt, swellPer,
+                                  swellDir, tide, swellAct, tideDir,
+                                  description)
+        if result:
+            return jsonify({"result": "Session Edited Successfully"}), 201
         return jsonify({"result": "Error occurred"}), 409
 
     if request.method == "DELETE":

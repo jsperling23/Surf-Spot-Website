@@ -114,7 +114,7 @@ function CreateSession() {
                     </input>
                     <br></br>
                     <label htmlFor="swellAct">Swell Activity: </label>
-                    <select id='tideDir' name='swellDir' onChange={e => setSwellAct(e.target.value)} defaultValue="">
+                    <select id='swellActu' name='swellDir' onChange={e => setSwellAct(e.target.value)} defaultValue="">
                         <option value="" disabled>Select Swell Activity</option>
                         <option value="Increasing">Increasing</option>
                         <option value="Decreasing">Decreasing</option>
@@ -122,7 +122,7 @@ function CreateSession() {
                     </select>
                     <br></br>
                     <label htmlFor="tideDir">Tide Direction: </label>
-                    <select id='tideDir' name='swellDir' onChange={e => setTideDir(e.target.value)} defaultValue="">
+                    <select id='tideDir' name='tideDir' onChange={e => setTideDir(e.target.value)} defaultValue="">
                         <option value="" disabled>Select Tide Direction</option>
                         <option value="Increasing">Increasing</option>
                         <option value="Decreasing">Decreasing</option>

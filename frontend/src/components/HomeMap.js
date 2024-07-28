@@ -2,7 +2,7 @@ import React from 'react';
 import {  useEffect, useRef } from 'react';
 import L from 'leaflet';
 
-function HomeMap() {
+function HomeMap( { spotData } ) {
     const mapRef = useRef(null)
     const markerRef = useRef([])
     
@@ -28,6 +28,26 @@ function HomeMap() {
         mapRef.current.on('click', onMapClick);
         */
       }, []);
+    
+    useEffect(() => {
+        markerRef.current.forEach(marker => mapRef.current.removeLayer(marker));
+        markerRef.current = [];
+
+        if (spotData) {
+            Object.entries(spotData).forEach(([key, value]) => {
+                const latitude = value.latitude
+                const longitude = value.longitude
+                const icon = L.icon({
+                    iconUrl: '/surfspotmarker.png',
+                    iconSize: [38, 38], 
+                    popupAnchor: [0, -20]
+                })
+                const marker = L.marker([latitude, longitude], { icon: icon}).addTo(mapRef.current)
+                marker.bindPopup(value.name)
+                markerRef.current.push(marker)
+            })
+        };
+        }, [spotData])
 
     return (
         <>
