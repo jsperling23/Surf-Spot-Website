@@ -3,7 +3,7 @@ import {  useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 function CreateSession() {
-    const [spot, setSpot] = useState(null);
+    const [spot, setSpot] = useState("");
     const [date, setDate] = useState(null);
     const [windSpd, setWindSpd] = useState(null);
     const [windDir, setWindDir] = useState(null);
@@ -17,9 +17,10 @@ function CreateSession() {
     const location = useLocation();
     const spotData = location.state.spotData
     const navigate = useNavigate();
+
     async function handleSubmit(e) {
         e.preventDefault();
-
+        console.log("spotID: ", spot)
         const saveSesh = await fetch("/Sessions",
             {method: 'POST',
             headers: {
@@ -58,7 +59,8 @@ function CreateSession() {
                 <fieldset>
                     <legend>Fill out the ideal conditions for your surf spot below</legend>
                     <label htmlFor="name">Choose the Spot: </label>
-                    <select id='name' name='name' onChange={e => setSpot(e.target.value)}>
+                    <select id='name' name='name' onChange={e => setSpot(e.target.value)} value={spot}>
+                        <option disabled value="">Choose a spot</option>
                         {Object.values(spotData).map((session) => (
                             <option key={session.spotID} value={session.spotID}>{session.name}</option>    
                         ))}
@@ -108,7 +110,7 @@ function CreateSession() {
                     <br></br>
                     <label htmlFor="tide">Tide(ft): </label>
                     <input
-                    type='number'
+                    type='decimal'
                     placeholder='4'
                     onChange={e => setTide(e.target.value)}>
                     </input>
@@ -130,11 +132,11 @@ function CreateSession() {
                     </select>
                     <br></br>
                     <label htmlFor="description">Notes: </label>
-                    <input
+                    <textarea
                     type='text'
                     placeholder='Write about your sesh...'
                     onChange={e => setDescription(e.target.value)}>
-                    </input>
+                    </textarea>
                     <br></br>
                     <br></br>
                     <button type='submit'>Submit</button>

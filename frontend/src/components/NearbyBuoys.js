@@ -1,7 +1,7 @@
 import React from 'react';
-import {  useState, useEffect } from 'react';
+import {  useEffect } from 'react';
 
-function Nearby( { lat, long, nearby, setNearby}) {
+function Nearby( { lat, long, nearby, setNearby, fillBuoys }) {
     useEffect(() => {
         const findNear = async () => {
             if (lat !== 0 && long !== 0) {
@@ -13,40 +13,38 @@ function Nearby( { lat, long, nearby, setNearby}) {
                 setNearby(parsedData)                
         }}
         findNear()
-    }, [lat, long])
+    }, [lat, long, setNearby])
 
 
     return(
         <>
-            <div>
-                    <button type="button">Nearby Buoys</button>
-                </div>
-                    {nearby ? (
-                    <form>
-                        <table className="nearbyTable">
-                            <tbody>
-                                <tr>
-                                    <td>Distance(miles)</td>
-                                    <td>Station ID</td>
-                                    <td>Description</td>
-                                </tr>
-                                { Object.keys(nearby).length > 0 ? Object.entries(nearby).map(([key, value]) => (
-                                    <tr key={key}>
-                                        <td>{parseFloat(key).toFixed(2)}</td>
-                                        <td>{value[0]}</td>
-                                        <td>{value[1]}</td>
-                                        <td>
-                                            <button value={ value[0] } 
-                                             type="submit">Use Station: {value[0]}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                )): <tr><td>No Buoys Nearby</td></tr>}
-                                
-                            </tbody>
-                        </table>
-                    </form>
-                        ) : null}  
+    
+            {nearby ? (
+            <form>
+                <table className="nearbyTable">
+                    <tbody>
+                        <tr>
+                            <td><strong>Distance(miles)</strong></td>
+                            <td><strong>Station ID</strong></td>
+                            <td><strong>Description</strong></td>
+                        </tr>
+                        { Object.keys(nearby).length > 0 ? Object.entries(nearby).map(([key, value]) => (
+                            <tr key={key}>
+                                <td>{parseFloat(key).toFixed(2)}</td>
+                                <td>{value[0]}</td>
+                                <td>{value[1]}</td>
+                                <td>
+                                    <button type='button' value={ value[0] } 
+                                        onClick={ () => fillBuoys(value[0]) }>Use Station: {value[0]}
+                                    </button>
+                                </td>
+                            </tr>
+                        )): <tr><td>No Buoys Nearby</td></tr>}
+                        
+                    </tbody>
+                </table>
+            </form>
+                ) : null}  
         </>
     )
 };

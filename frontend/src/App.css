@@ -111,3 +111,15 @@ body {
   font-weight: bold;
   border-color: black;
 }
+
+.createBuoys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.nearbyTable {
+  border: solid 2px;
+  border-color: #C1FEF3;
+}

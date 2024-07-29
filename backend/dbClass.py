@@ -24,13 +24,14 @@ class Database:
             "user": dbUser,
             "password": dbPassword,
             "database": dbName,
-            "host": dbHost
+            "host": dbHost,
+            "pool_reset_session": True
         }
 
         try:
             cnxpool = mysql.connector.pooling.MySQLConnectionPool(
                 pool_name="pool",
-                pool_size=2,
+                pool_size=5,
                 **db_config
                 )
             self._connected = True
@@ -53,6 +54,8 @@ class Database:
         set fetch to "one".
         """
         data = []
+        cnx = None
+        cursor = None
         try:
             # get connection and execute query
             cnx = self._cnxpool.get_connection()
@@ -70,8 +73,6 @@ class Database:
                 data = cursor.fetchall()
             else:
                 data = cursor.fetchone()
-            cursor.close()
-            cnx.close()
 
         # error handling
         except mysql.connector.Error as err:
@@ -82,5 +83,11 @@ class Database:
             else:
                 print(err)
 
-        # close connections
+        # close any connections
+        finally:
+            if cursor:
+                cursor.close()
+            if cnx:
+                cnx.close()
+
         return data

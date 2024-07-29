@@ -189,17 +189,18 @@ class SurfSpot:
 
     def editSession(self, date: str, windSpd: int, windDir: int,
                     swellHgt: float, swellPer: int, swellDir: int, tide: float,
-                    swellAct: str, tideDir: str, description: str) -> bool:
+                    swellAct: str, tideDir: str, description: str,
+                    sessionID: int) -> bool:
         """
         Edits a session in the SavedSessions Table
         """
         query = "UPDATE SavedSessions SET date = %s, windSpeed = %s,\
                 windDirection = %s, swellHeight = %s, swellPeriod = %s,\
                 swellDirection = %s, tide = %s, swellActivity = %s,\
-                tideDirection = %s, description = %s WHERE spotID = %s"
+                tideDirection = %s, description = %s WHERE sessionID = %s"
         params = [date, windSpd, windDir, swellHgt,
                   swellPer, swellDir, tide, swellAct, tideDir, description,
-                  self._spotID]
+                  sessionID]
         db = self._db
         result = db.executeQuery(query, params)
         if not result:

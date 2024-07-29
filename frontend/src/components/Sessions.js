@@ -34,6 +34,7 @@ function Session({ session, updateSessions, handleUpdate }) {
                 'Content-Type': 'application/json'},
             body: JSON.stringify({
                 spotID: editData.spotID,
+                sessionID: editData.sessionID,
                 date: new Date(editData.date).toISOString().substring(0, 10),
                 windSpd: editData.windSpeed,
                 windDir: editData.windDirection,
@@ -278,17 +279,18 @@ function Sessions() {
     return (
       <>
         <div>
-          <legend>My Sessions</legend>
+          <legend><strong>My Sessions</strong></legend>
             {
                 seshData ?
-                    Object.values(seshData).map((session) => (
+                    Object.keys(seshData).length > 0 ? 
+                    (Object.values(seshData).map((session) => (
                         <Session
                             handleUpdate={handleUpdate}
                             updateSessions={updateSessions}
                             session={session}
                             key={session.sessionID}
                         />
-                )) :
+                ))) : <p>No Sessions Saved</p> :
                 <p>...Loading</p>
             }
         </div>

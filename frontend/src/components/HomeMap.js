@@ -37,12 +37,7 @@ function HomeMap( { spotData } ) {
             Object.entries(spotData).forEach(([key, value]) => {
                 const latitude = value.latitude
                 const longitude = value.longitude
-                const icon = L.icon({
-                    iconUrl: '/surfspotmarker.png',
-                    iconSize: [38, 38], 
-                    popupAnchor: [0, -20]
-                })
-                const marker = L.marker([latitude, longitude], { icon: icon}).addTo(mapRef.current)
+                const marker = L.marker([latitude, longitude]).addTo(mapRef.current)
                 marker.bindPopup(value.name)
                 markerRef.current.push(marker)
             })

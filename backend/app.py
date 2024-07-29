@@ -289,6 +289,7 @@ def savedSessions():
         formData = request.json
         spotID = formData["spotID"]
         spot = SurfSpot(spotID, db)
+        sessionID = formData["sessionID"]
         date = formData["date"]
         windSpd = formData["windSpd"]
         windDir = formData["windDir"]
@@ -301,7 +302,7 @@ def savedSessions():
         description = formData["description"]
         result = spot.editSession(date, windSpd, windDir, swellHgt, swellPer,
                                   swellDir, tide, swellAct, tideDir,
-                                  description)
+                                  description, sessionID)
         if result:
             return jsonify({"result": "Session Edited Successfully"}), 201
         return jsonify({"result": "Error occurred"}), 409

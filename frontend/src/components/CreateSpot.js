@@ -1,7 +1,6 @@
 import React from 'react';
-import {  useState, useEffect } from 'react';
+import {  useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Map from './CreateMap';
 import Nearby from './NearbyBuoys'
 import CreateMap from './CreateMap';
 
@@ -15,6 +14,7 @@ function CreateSpot() {
     const [nearby, setNearby] = useState(null);
     const [spotID, setSpotID] = useState(null);
     const navigate = useNavigate();
+    const prev = useRef(null)
 
     // Get the userID from session storage upon load
     useEffect(() => {
@@ -25,6 +25,20 @@ function CreateSpot() {
         }
 
       }, []);
+    
+    function fillBuoys(stationID){
+        if (buoy1 === null) {
+            setBuoy1(stationID)
+        } else if (buoy2 === null) {
+            setBuoy2(stationID)
+        } else if (prev.current === 1) {
+            setBuoy2(stationID)
+            prev.current = 2
+        } else {
+            setBuoy1(stationID)
+            prev.current = 1
+        }
+    };
 
     async function handleSubmit(e){
         e.preventDefault();
@@ -58,7 +72,11 @@ function CreateSpot() {
 
     return(
         <>
-            <CreateMap setLat = { setLat } setLong = { setLong } nearby = { nearby} />
+            <div className='createBuoys'>
+                <CreateMap setLat = { setLat } setLong = { setLong } nearby = { nearby } fillBuoys={ fillBuoys } />
+                {lat !== 0 && long !== 0 ? <Nearby lat = { lat } long = { long } 
+                  setNearby = { setNearby } nearby = { nearby } fillBuoys={ fillBuoys }/> : <></>}
+            </div>
             <form onSubmit={ handleSubmit }>
                 <fieldset>
                     <legend>Enter latitude and longitude and fill out the following fields</legend>
@@ -96,6 +114,7 @@ function CreateSpot() {
                     type='text'
                     maxLength='10'
                     placeholder='ex.46237'
+                    value={ buoy1 }
                     onChange={e => setBuoy1(e.target.value)}>
                     </input>
                     <br></br>
@@ -104,6 +123,7 @@ function CreateSpot() {
                     type='text'
                     maxLength='10'
                     placeholder='ex.46237'
+                    value={ buoy2 }
                     onChange={e => setBuoy2(e.target.value)}>
                     </input>
                     <br></br>
@@ -111,9 +131,7 @@ function CreateSpot() {
                     <button type='submit'>Submit</button>
                 </fieldset>
             </form>
-            <div>{lat !== 0 && long !== 0 ? <Nearby lat = { lat } long = { long } 
-                  setNearby = { setNearby } nearby = { nearby }/> : <></>}
-            </div>
+            
             
         </>
     )

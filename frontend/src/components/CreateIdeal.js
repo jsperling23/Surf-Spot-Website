@@ -45,7 +45,7 @@ function CreateIdeal() {
             if (createIdeal.status === 201) {
                 const response = await createIdeal.json()
                 console.log(response)
-                alert("Surf Spot Created!")
+                alert("Ideal Conditions Saved")
                 navigate('/');
             } else {
                 const responseData = await createIdeal.json();

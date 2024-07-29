@@ -46,7 +46,7 @@ function Login() {
             navigate('/');
         } else {
             setFailed(true)
-            alert('Incorrect username or passord')
+            alert('Incorrect username or password')
         }
     };
     
