@@ -5,7 +5,7 @@ function Menu( { onClick , logged }) {
   //logout function
   console.log(logged)
   const logout = async () => {
-    const logout = await fetch('/logout', {
+    const logout = await fetch('/backend/logout', {
       method: "GET",
       credentials: 'include'
     });

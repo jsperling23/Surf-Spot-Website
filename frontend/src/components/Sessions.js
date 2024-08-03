@@ -12,7 +12,7 @@ function Session({ session, updateSessions, handleUpdate }) {
         e.preventDefault();
         const decision = window.confirm("Are you sure you want to delete this spot?");
         if (!decision) return;
-        const deleteSpot = await fetch(`/Sessions?sessionID=${sessionID}`,
+        const deleteSpot = await fetch(`/backend/Sessions?sessionID=${sessionID}`,
             {method: 'DELETE', credentials: 'include'});
             if (deleteSpot.status === 201) {
                 const response = await deleteSpot.json()
@@ -28,7 +28,7 @@ function Session({ session, updateSessions, handleUpdate }) {
     async function handleEdit(e) {
         e.preventDefault();
         console.log("edit request data: ", editData)
-        const editSesh = await fetch("/Sessions",
+        const editSesh = await fetch("/backend/Sessions",
             {method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'},
@@ -225,7 +225,7 @@ function Sessions() {
 
     // Get all surf sessions for a specific userID
     async function getSessions(user) {
-        const response = await (fetch(`/Sessions?userID=${user}`,
+        const response = await (fetch(`/backend/Sessions?userID=${user}`,
           { method: "GET" }))
         const data = await response.json()
         return data

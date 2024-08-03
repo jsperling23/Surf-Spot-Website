@@ -1,4 +1,4 @@
-@hostname = http://localhost:5000
+@hostname = http://localhost:4000
 
 // request for /SurfSpot
 GET {{hostname}}/surfSpot?userID=1
@@ -99,6 +99,6 @@ DELETE {{hostname}}/Sessions?sessionID=2
 ###
 
 // request for /request
-GET {{hostname}}/request?stationID=46237
+GET http://localhost:4000/request?stationID=46237
 
 

@@ -14,7 +14,7 @@ function Homepage() {
 
     //If user is logged in, continue, else, redirect to the login page
     const checkAuth = async () => {
-        const auth = await fetch(`/auth`, {credentials: 'include'});
+        const auth = await fetch(`/backend/auth`, {credentials: 'include'});
         if (auth.status === 200) {
             setStatus(true)
         };

@@ -27,7 +27,7 @@ function CreateIdeal() {
             "tideMax": tideMax
         };
         console.log(send)
-        const createIdeal = await fetch("/ideal",
+        const createIdeal = await fetch("/backend/ideal",
             {method: 'POST',
             headers: {
                 'Content-Type': 'application/json'},

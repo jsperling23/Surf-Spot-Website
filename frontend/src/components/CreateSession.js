@@ -21,7 +21,7 @@ function CreateSession() {
     async function handleSubmit(e) {
         e.preventDefault();
         console.log("spotID: ", spot)
-        const saveSesh = await fetch("/Sessions",
+        const saveSesh = await fetch("/backend/Sessions",
             {method: 'POST',
             headers: {
                 'Content-Type': 'application/json'},

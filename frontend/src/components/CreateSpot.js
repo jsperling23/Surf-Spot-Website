@@ -43,7 +43,7 @@ function CreateSpot() {
     async function handleSubmit(e){
         e.preventDefault();
 
-        const createSpot = await fetch("/surfSpot",
+        const createSpot = await fetch("/backend/surfSpot",
             {method: 'POST',
             headers: {
                 'Content-Type': 'application/json'},

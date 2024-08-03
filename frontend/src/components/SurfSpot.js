@@ -17,7 +17,7 @@ function Spot( { surfSpot, updateSpots, handleUpdate } ) {
         const decision = window.confirm("Are you sure you want to delete this spot?");
         if (!decision) return;
 
-        const deleteSpot = await fetch(`/surfSpot?spotID=${spotID}`,
+        const deleteSpot = await fetch(`/backend/surfSpot?spotID=${spotID}`,
             {method: 'DELETE', credentials: 'include'});
             if (deleteSpot.status === 201) {
                 const response = await deleteSpot.json()
@@ -32,7 +32,7 @@ function Spot( { surfSpot, updateSpots, handleUpdate } ) {
 
     async function handleEdit(e) {
         e.preventDefault();
-        const editSpot = await fetch("/surfSpot",
+        const editSpot = await fetch("/backend/surfSpot",
             {method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'},
@@ -253,7 +253,7 @@ function SurfSpots() {
 
     // Get all surf spots for a specific userID
     async function getSpots(user) {
-        const response = await (fetch(`/surfSpot?userID=${ user }`,
+        const response = await (fetch(`/backend/surfSpot?userID=${ user }`,
                                      { method: "GET" }))
         const data = await response.json()
         return data
