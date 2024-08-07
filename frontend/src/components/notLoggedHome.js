@@ -55,7 +55,7 @@ function NotLoggedHome() {
         <> 
             <article> 
                 <p>Choose your buoy from a list of buoys here: <a href = "https://www.ndbc.noaa.gov/to_station.shtml">List of NOAA Buoys</a> or <a href='https://www.ndbc.noaa.gov/'>Map of NOAA Buoys</a></p>
-                <p>Get buoy data by filling out the form below after finding the station ID of your buoy of choice </p>
+                <p>Login or create an account to create your own surf spots and journal your sessions using those spots.</p>
                 <form onSubmit={ handleSubmit } className="buoyInput">
                     <fieldset>
                         <legend>Enter Buoy Station and Press Submit</legend>
@@ -74,7 +74,7 @@ function NotLoggedHome() {
                         <button type='submit'>Submit</button>
                     </fieldset> 
                 </form>
-                <p>You can also find the buoys closest using your current location or coordinates of your choice</p>
+                <p>Press the button below to get the closest buoys to your location</p>
                 <div>
                     <button type="button" onClick={ getLocation }>Find Nearby Buoys</button>
                 </div>
@@ -93,7 +93,7 @@ function NotLoggedHome() {
                                         <td>{value[0]}</td>
                                         <td>{value[1]}</td>
                                         <td>
-                                            <button value={ value[0] } 
+                                            <button id='nearbyButton' value={ value[0] } 
                                                 onClick={ e => setBuoy(e.target.value)} type="submit">Use Station: {value[0]}
                                             </button>
                                         </td>

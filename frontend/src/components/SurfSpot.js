@@ -75,9 +75,9 @@ function Spot( { surfSpot, updateSpots, handleUpdate } ) {
             {!edit ? 
             <table className = "surfSpotTable">
                 <tbody>
-                    <tr>
-                            <td> {surfSpot["name"]}</td>
-                            <td className = "surfExpand" colSpan='5'> 
+                         <tr id='spotTableHead'>
+                            <td colSpan='2'> {surfSpot["name"]}</td>
+                            <td className = "surfExpand" colSpan='4'> 
                                 <button onClick = {() => {setCollapse(!collapse)}}> + </button>
                             </td>
                         </tr>
@@ -118,15 +118,13 @@ function Spot( { surfSpot, updateSpots, handleUpdate } ) {
                             <td><label htmlFor='spotName'>Name: </label>
                                 <input
                                 type='text'
+                                id='editName'
                                 required
                                 maxLength='100'
                                 placeholder="ex. Pipeline"
                                 defaultValue={editData["name"]}
                                 onChange={e => editData["name"] = e.target.value}>
                                 </input></td>
-                            <td className = "surfExpand" colSpan='5'> 
-                                <button onClick = {() => {setCollapse(!collapse)}}> + </button>
-                            </td>
                         </tr>
                             <tr>
                                 <td>Buoy 1:</td>
@@ -309,8 +307,8 @@ function SurfSpots() {
     
     return (
         
-            <div>
-                <HomeMap spotData = { spotData }/>             
+            <div className='surfSpot'>
+                <HomeMap className="homemap" spotData = { spotData }/>             
                     <div>
                         { spotData ? 
                             Object.values(spotData).map((spot, key) => (
