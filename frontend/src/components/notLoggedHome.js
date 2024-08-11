@@ -6,13 +6,29 @@ import { useNavigate } from 'react-router-dom';
 function NotLoggedHome() {
     console.log("component rendered")
     const [formsubmitted, setFormSubmitted] = useState(false);
+    const [buoys, setBuoys] = useState(null);
     const [buoy, setBuoy] = useState("");
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
     const [nearby, setNearby] = useState(null);
     const navigate = useNavigate();
 
-    //Handle form submission and pass the buoy state onto /buoyDisplay
+    // Get all buoys and set buoy data
+    async function allBuoys() {
+        const response = await fetch('/backend/request?stationID=all')
+        const data = await response.json()
+        if (response.status === 200) {
+            setBuoys(data)
+        } else {
+            console.log(data)
+        }
+    }
+
+    useEffect(() => {
+        allBuoys()
+    },[])
+
+    // Handle form submission and pass the buoy state onto /buoyDisplay
     const handleSubmit = (e) => {
         console.log("submit thing");
         e.preventDefault();
@@ -20,7 +36,7 @@ function NotLoggedHome() {
         navigate('/buoyDisplay', {state: {buoy}})
     }
 
-    //Get the users current location
+    // Get the users current location
     const getLocation = () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(success)
@@ -34,16 +50,14 @@ function NotLoggedHome() {
             setLongitude(coords.longitude)
     };
 
-    //When the latitude/longitude is changed then the effect is triggered and the 
-    //closest buoys to the current coordinates are displayed 
+    // When the latitude/longitude is changed then the effect is triggered and the 
+    // closest buoys to the current coordinates are displayed 
     useEffect(() => {
         const findNear = async () => {
             if (latitude !== null && longitude !== null) {
                 const response = await fetch(`/backend/findBuoys?lat=${latitude}&long=${longitude}`)
                 const data = await response.text()
                 const parsedData = JSON.parse(data)
-
-                //loop through parsedData and extract 
                 setNearby(parsedData)                
         }}
         findNear()
