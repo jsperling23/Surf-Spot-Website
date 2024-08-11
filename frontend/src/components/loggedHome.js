@@ -55,7 +55,7 @@ function LoggedHome() {
 
     return (
         <>
-            <article> 
+            <article className='loggedHome'> 
                 <div className='surfStuff'>
                     <SurfSpots/>
                     <Sessions/>
@@ -79,7 +79,7 @@ function LoggedHome() {
                                         <td>{value[0]}</td>
                                         <td>{value[1]}</td>
                                         <td>
-                                            <button value={ value[0] } 
+                                            <button id='nearbyButton' value={ value[0] } 
                                                 onClick={ e => setBuoy(e.target.value)} type="submit">Use Station: {value[0]}
                                             </button>
                                         </td>

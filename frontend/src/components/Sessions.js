@@ -71,16 +71,16 @@ function Session({ session, updateSessions, handleUpdate }) {
           {!edit ? 
             <table className="surfSpotTable">
                 <tbody>
-                    <tr>
-                    <td>{session.date.split(" ").slice(0, 4).join(" ")}</td>
-                    <td className="surfExpand" colSpan='5'>
-                        <button onClick={() => { setCollapse(!collapse) }}> + </button>
+                    <tr id="spotTableHead">
+                        <td colSpan='4'>{session.date.split(" ").slice(0, 4).join(" ")}</td>
+                        <td className="surfExpand" colSpan='2'>
+                            <button onClick={() => { setCollapse(!collapse) }}> + </button>
                     </td>
                     </tr>
                     {collapse ?
                     <>
                         <tr>
-                            <td><strong>Spot Name: </strong>{ session.name }</td>
+                            <td id="spotTableHead"><strong>Spot Name: </strong>{ session.name }</td>
                             <td><strong>Wind Speed(mph): </strong>{ session.windSpeed }</td>
                             <td><strong>Wind Direction(°): </strong>{ session.windDirection }</td>
                         </tr>
