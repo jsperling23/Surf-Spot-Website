@@ -9,15 +9,14 @@ import Menu from './Menu';
 function Homepage() {
     console.log("component rendered")
 
-    const [loggedStatus, setStatus] = useState();
-    const navigate = useNavigate();
+    const [loggedStatus, setStatus] = useState(null);
 
     //If user is logged in, continue, else, redirect to the login page
     const checkAuth = async () => {
         const auth = await fetch(`/backend/auth`, {credentials: 'include'});
         if (auth.status === 200) {
             setStatus(true)
-        };
+        } else { setStatus(false) };
     };
     
     useEffect(() => {
@@ -30,8 +29,13 @@ function Homepage() {
     
     return (
         <>
-            <div className='Menu'>{ <Menu onClick = { handleLogout } logged = { loggedStatus }/> }</div>
-            <div>{ loggedStatus ? <LoggedHome/> : <NotLoggedHome/>}</div>
+            { (loggedStatus != null) ?
+            <div className="homepage">
+                <div className='Menu'>{ <Menu onClick = { handleLogout } logged = { loggedStatus }/> }</div>
+                <div>{ loggedStatus ? <LoggedHome/> : <NotLoggedHome/>}</div>
+            </div>
+            : <div>...loading</div>}
+            
         </>
     )
 };

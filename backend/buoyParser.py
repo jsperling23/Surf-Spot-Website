@@ -1,4 +1,25 @@
 import requests
+from dbClass import Database
+
+
+def allBuoys(db: object) -> dict:
+    """
+    This function takes in a database object and returns all buoys
+    in the database in a dictionary.
+    """
+    buoys = {}
+    query = "SELECT * FROM Buoys"
+    data = db.executeQuery(query, [])
+    if data:
+        for buoy in data:
+            buoys[buoy[0]] = {
+                                "buoyID": buoy[0],
+                                "stationID": buoy[1],
+                                "latitude": buoy[2],
+                                "longitude": buoy[3],
+                                "description": buoy[4]
+                }
+    return buoys
 
 
 def parseBuoy(stationID) -> dict:
@@ -41,3 +62,8 @@ def buoyRequest(stationID) -> (tuple):
         return (response.text, response.status_code)
     else:
         return (None, response.status_code)
+
+
+if __name__ == "__main__":
+    db = Database()
+    print(allBuoys(db))

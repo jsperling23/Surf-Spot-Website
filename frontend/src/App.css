@@ -35,8 +35,8 @@ body {
 }
 
 .buoyData table {
-  margin: auto; /* Center the table horizontally */
-  width: 30%; /* Set the width of the table */
+  margin: auto; 
+  width: 30%;
   text-align: left;
 }
 
@@ -57,22 +57,44 @@ body {
   display:block;
 }
 
+.surfSpot{
+  width: 100%;
+  max-width: 500px;
+  min-width: 200px;
+}
+
+#map{
+  width: 100%;
+  max-width: 500px;
+  min-width: 200px;
+}
+
 .surfSpotTable {
   border: solid 2px;
   border-color: #C1FEF3;
-  width: 500px;             
+  width: 500px;
   height: 20px;
   margin-bottom: 10px;
+  overflow-x: auto;
 }
 
 .surfEditTable {
   border: solid 2px;
   border-color: #C1FEF3;
+  max-width: 500px;
+  min-width: 200px;
   width: 500px;             
   height: 20px;
   margin-bottom: 10px;
 }
 
+#editName {
+  width: 100px;
+}
+
+.homepage {
+  width: 100%;
+}
 .surfEditTable input {
   width: 50px;
 }
@@ -87,7 +109,7 @@ body {
   margin-bottom: 10px;
  }
 
- .surfStuff {
+.surfStuff {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
@@ -122,4 +144,55 @@ body {
 .nearbyTable {
   border: solid 2px;
   border-color: #C1FEF3;
+}
+
+
+/* Mobile Formatting */
+
+
+@media (max-width: 600px) {
+  .surfSpotTable {
+    width: 100%;
+  }
+
+  .surfSpotTable th,
+  .surfSpotTable td {
+    display: block;
+    position: relative;
+  }
+
+  .surfSpotTable tr {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+  }
+
+  .surfEditTable th,
+  .surfEditTable td {
+    display: block;
+    position: relative;
+  }
+
+  #spotTableHead{
+    display: flex;
+  }  
+
+  .surfEditTable {
+    width: 100%;
+  }
+  
+  .nearbyTable tr{
+    display: block;
+    font-size: small;
+  }
+
+  #nearbyButton{
+    font-size: small;
+    width: 100px;
+  }
+
+  #map{
+    width: 100%;
+  }
+
 }

@@ -5,17 +5,23 @@ import {  useState, useEffect } from 'react';
 
 //Main component of this page
 function Buoy () {
-    const location = useLocation()
-    const [buoyData, setData] = useState(null)
-    const [units, setUnits] = useState("imperial")
-    const [prevUnits, setPrevUnits] = useState(units)
-    const [height, setHeight] = useState(null)
-    const [heightUnit, setHeightUnit] = useState("Feet")
-    const [windUnit, setWindUnit] = useState("MPH")
-    const [waterUnit, setWaterUnit] = useState("°F")
-    const [water, setWater] = useState(null)
-    const [wind, setWind] = useState(null)
-    const buoyId = location.state.buoy
+    const location = useLocation();
+    const [buoyData, setData] = useState(null);
+    const [units, setUnits] = useState("imperial");
+    const [prevUnits, setPrevUnits] = useState(units);
+    const [height, setHeight] = useState(null);
+    const [heightUnit, setHeightUnit] = useState("Feet");
+    const [windUnit, setWindUnit] = useState("MPH");
+    const [waterUnit, setWaterUnit] = useState("°F");
+    const [water, setWater] = useState(null);
+    const [wind, setWind] = useState(null);
+    let buoyId;
+    if (location.state.buoy) {
+        buoyId = location.state.buoy
+    } else {
+        buoyId = location.state.mapButton
+    };
+    
 
     //Function to fetch the buoy data
     async function getBuoyData (stationID) {

@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required
 
 # import backend functions
-from buoyParser import parseBuoy
+from buoyParser import parseBuoy, allBuoys
 from haversineCalc import haversineCalc
 from user import User
 from dbClass import Database
@@ -105,12 +105,19 @@ def buoyRequest():
     /request?stationID=<string>
     """
 
-    # get buoy data
-    param = request.args.get("stationID")
-    data = parseBuoy(param)
-    print(data)
-    # return data to frontend
-    return jsonify(data)
+    # get all buoys
+    if request.args.get("stationID") == "all":
+        data = allBuoys(db)
+        if data:
+            return jsonify(data), 200
+        return jsonify({"result": "Error occurred"}), 409
+
+    # get a single buoys data
+    else:
+        param = request.args.get("stationID")
+        data = parseBuoy(param)
+        print(data)
+        return jsonify(data)
 
 
 # Buoy data and surf spot routes
