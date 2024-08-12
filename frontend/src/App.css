@@ -151,6 +151,10 @@ body {
 
 
 @media (max-width: 600px) {
+  .surfSpotTable {
+    width: 100%;
+  }
+
   .surfSpotTable th,
   .surfSpotTable td {
     display: block;
@@ -160,6 +164,7 @@ body {
   .surfSpotTable tr {
     display: inline-block;
     position: relative;
+    width: 100%;
   }
 
   .surfEditTable th,

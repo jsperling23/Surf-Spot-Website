@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import HomeMap from './HomeMap';
 
 
 
@@ -7,6 +8,7 @@ function NotLoggedHome() {
     console.log("component rendered")
     const [formsubmitted, setFormSubmitted] = useState(false);
     const [buoys, setBuoys] = useState(null);
+    const [mapButton, setMapButton] = useState(null)
     const [buoy, setBuoy] = useState("");
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
@@ -28,9 +30,17 @@ function NotLoggedHome() {
         allBuoys()
     },[])
 
+    useEffect(() => {
+        if (mapButton) {
+                console.log(`StationID: ${mapButton}`)
+                navigate('/buoyDisplay', {state: {mapButton}})
+        };
+    }, [mapButton])
+
+
     // Handle form submission and pass the buoy state onto /buoyDisplay
     const handleSubmit = (e) => {
-        console.log("submit thing");
+        console.log(buoy);
         e.preventDefault();
         setFormSubmitted(true);
         navigate('/buoyDisplay', {state: {buoy}})
@@ -68,12 +78,13 @@ function NotLoggedHome() {
     return (
         <> 
             <article> 
-                <p>Choose your buoy from a list of buoys here: <a href = "https://www.ndbc.noaa.gov/to_station.shtml">List of NOAA Buoys</a> or <a href='https://www.ndbc.noaa.gov/'>Map of NOAA Buoys</a></p>
-                <p>Login or create an account to create your own surf spots and journal your sessions using those spots.</p>
+                <p>Choose a buoy from the map below to get current conditions</p>
+                <p>Login or create an account to create your own surf spots and journal your sessions</p>
+                {buoys ? <HomeMap buoyData = { buoys } setMapButton = { setMapButton }/> : <p>...loading</p>}
                 <form onSubmit={ handleSubmit } className="buoyInput">
                     <fieldset>
-                        <legend>Enter Buoy Station and Press Submit</legend>
-                        <label htmlFor='buoyID'>Enter your Buoy ID here:</label>
+                        <legend>You can also manually enter the station ID</legend>
+                        <label htmlFor='buoyID'>Station ID:</label>
                         <input
                         id='buoyID'
                         className='buoyInput'

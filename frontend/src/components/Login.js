@@ -1,6 +1,6 @@
 import React from 'react'; 
 import {  useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 
 //login function
 async function loginFunc(username, password) {
@@ -86,9 +86,10 @@ function Login() {
                     </fieldset>
                 </form>
                 {failed? (
-                    <p>Don't have an account? Create one here!</p>
+                    <p>Don't have an account? Create one <NavLink to="/CreateUser">here!</NavLink></p>
                 ) : null}
             </div>
+            <NavLink to="/">Return Home</NavLink>
         </div>
     )
 };

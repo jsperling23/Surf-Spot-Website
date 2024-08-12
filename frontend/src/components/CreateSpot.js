@@ -12,7 +12,6 @@ function CreateSpot() {
     const [buoy2, setBuoy2] = useState(null);
     const [user, setUser] = useState(null);
     const [nearby, setNearby] = useState(null);
-    const [spotID, setSpotID] = useState(null);
     const navigate = useNavigate();
     const prev = useRef(null)
 
@@ -60,9 +59,8 @@ function CreateSpot() {
             if (createSpot.status === 201) {
                 const response = await createSpot.json()
                 console.log(response)
-                setSpotID(response["spotID"])
                 alert("Surf Spot Created!")
-                navigate('/createIdeal', {state: { spotID: response["spotID"] }});
+                navigate('/createIdeal', {state: { spotID: response.spotID }});
             } else {
                 const responseData = await createSpot.json();
                 console.log(responseData)

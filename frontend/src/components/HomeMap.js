@@ -2,47 +2,60 @@ import React from 'react';
 import {  useEffect, useRef } from 'react';
 import L from 'leaflet';
 
-function HomeMap( { spotData } ) {
+function HomeMap( { spotData, buoyData, setMapButton } ) {
     const mapRef = useRef(null)
     const markerRef = useRef([])
     
     useEffect(() => {
         if(mapRef.current) return;
 
-        const map = L.map('map').setView([37.77, -122.41], 8);
+        const map = L.map('map').setView([37.77, -122.41], 3);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
         mapRef.current = map
-        const popup = L.popup();
-        
-        /*
-        function onMapClick(e) {
-            popup
-                .setLatLng(e.latlng)
-                .setContent("Chosen coordinates:  " + e.latlng.wrap().toString())
-                .openOn(mapRef.current);
-        }
-
-        mapRef.current.on('click', onMapClick);
-        */
       }, []);
-    
+
+        
     useEffect(() => {
         markerRef.current.forEach(marker => mapRef.current.removeLayer(marker));
         markerRef.current = [];
 
         if (spotData) {
             Object.entries(spotData).forEach(([key, value]) => {
+                console.log(value.name)
                 const latitude = value.latitude
                 const longitude = value.longitude
                 const marker = L.marker([latitude, longitude]).addTo(mapRef.current)
-                marker.bindPopup(value.name)
+                marker.bindPopup(`<strong>${value.name}</strong>`)
                 markerRef.current.push(marker)
             })
         };
-        }, [spotData])
+
+        if (buoyData) {
+            Object.entries(buoyData).forEach(([key, value]) => {
+                const latitude = value.latitude
+                const longitude = value.longitude
+                const marker = L.marker([latitude, longitude]).addTo(mapRef.current)
+                marker.bindPopup(`<strong>${value.description}: 
+                                </strong>
+                                <br/>
+                                <p>${value.stationID}</p>
+                                <button id="mapButton" value=${value.stationID}>Use Station</button>`
+                                )
+                markerRef.current.push(marker)
+
+                //add event listener for button click
+                marker.on("popupopen", () => {
+                    document.getElementById("mapButton").addEventListener("click", (e) => {
+                        setMapButton(e.target.value)
+                    })
+                })
+            })
+        };
+
+        }, [spotData, buoyData])
 
     return (
         <>

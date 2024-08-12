@@ -99,7 +99,7 @@ DELETE {{hostname}}/Sessions?sessionID=2
 ###
 
 // request for /request
-GET http://localhost:5000/request?stationID=46237
+GET http://localhost:5000/request?stationID=46026
 
 ###
 

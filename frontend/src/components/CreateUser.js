@@ -1,6 +1,6 @@
 import React from 'react'; 
 import {  useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 
 function CreateUser () {
     const [username, setUsername] = useState(null);
@@ -89,6 +89,7 @@ function CreateUser () {
                     </fieldset>
                 </form>
             </div>
+            <NavLink to="/">Cancel</NavLink>
         </div>
     )
 }
