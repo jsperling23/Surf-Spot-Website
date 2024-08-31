@@ -37,16 +37,22 @@ function CreateMap( { setLat, setLong, nearby, fillBuoys } ) {
 
         if (nearby) {
             Object.entries(nearby).map(([key, value]) => {
-                const html = renderToString(
-                    <div>
-                        <p>Station: {value[0]} <br></br>
-                        {value[1]}
-                        </p>
-                    </div>
-                )
-                const marker = L.marker([value[2], value[3]]).addTo(mapRef.current);
-                marker.bindPopup(html)
-                markerRef.current.push(marker)
+                const latitude = value[2]
+                const longitude = value[3]
+                const marker = L.marker([latitude, longitude]).addTo(mapRef.current);
+                marker.bindPopup(`<strong>Station ID: ${value[0]}
+                    </strong>
+                    <br/>
+                    <button id=${key} value=${value[0]}>Use Station</button>`
+                    );
+                markerRef.current.push(marker);
+
+                marker.on("popupopen", () => {
+                    document.getElementById(key).addEventListener("click", (e) => {
+                        console.log("Clicked: ", e.target.value)
+                        fillBuoys(e.target.value)
+                    })
+                });
             })
         };
       }, [nearby])

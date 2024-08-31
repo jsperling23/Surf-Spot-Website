@@ -51,7 +51,7 @@ function HomeMap( { spotData, buoyData, setMapButton } ) {
                     document.getElementById("mapButton").addEventListener("click", (e) => {
                         setMapButton(e.target.value)
                     })
-                })
+                });
             })
         };
 

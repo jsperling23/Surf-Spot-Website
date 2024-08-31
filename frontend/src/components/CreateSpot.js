@@ -7,9 +7,9 @@ import CreateMap from './CreateMap';
 function CreateSpot() {
     const [lat, setLat] = useState(0);
     const [long, setLong] = useState(0);
-    const [spotName, setName] = useState(null);
-    const [buoy1, setBuoy1] = useState(null);
-    const [buoy2, setBuoy2] = useState(null);
+    const [spotName, setName] = useState("");
+    const [buoy1, setBuoy1] = useState("");
+    const [buoy2, setBuoy2] = useState("");
     const [user, setUser] = useState(null);
     const [nearby, setNearby] = useState(null);
     const navigate = useNavigate();
