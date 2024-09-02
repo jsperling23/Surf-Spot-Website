@@ -1,8 +1,10 @@
 import bcrypt
 
+from db import DatabaseHandler
+
 
 class User:
-    def __init__(self, username: str, password: str, db: object) -> None:
+    def __init__(self, username: str, password: str, db: DatabaseHandler) -> None:
         self._username = username
         self._userID = None
         self._password = password
@@ -25,8 +27,9 @@ class User:
         Verfies if the password from the form matches what is in the
         database
         """
-        check = bcrypt.checkpw(passwordToCheck.encode('utf-8'),
-                               self._password.encode('utf-8'))
+        check = bcrypt.checkpw(
+            passwordToCheck.encode("utf-8"), self._password.encode("utf-8")
+        )
         if check:
             self._isAuthenticated = True
         return check
@@ -50,6 +53,10 @@ class User:
     @staticmethod
     def get(username: str, db: object):
         # find the user
+        # TODO: this is not good -> lets use an
+        # index on the Users table which prevents duplicate inserts of
+        # records with the same username,
+        # therefore, we will only ever have one user with a username
         query = "SELECT * FROM Users WHERE username = %s"
         user = db.executeQuery(query, [username], "one")
         print(user)

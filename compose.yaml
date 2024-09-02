@@ -1,19 +1,31 @@
 services:
   backend:
+    depends_on:
+      - db
+    restart: always
+    container_name: backend
     build:
       context: ./backend
-      dockerfile: Dockerfile.backend
     env_file:
       - ./backend/.env
     image: surf-backend
+    ports:
+      - 4000:4000
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.frontend
     image: surf-frontend
     ports:
       - 80:80
-
-
-
-
+  db:
+    container_name: db-master
+    image: mysql:8.2
+    ports:
+      - 32001:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./backend/migrations:/docker-entrypoint-initdb.d
+volumes:
+  db_data:

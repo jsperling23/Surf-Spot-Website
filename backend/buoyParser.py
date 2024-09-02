@@ -1,5 +1,6 @@
 import requests
-from dbClass import Database
+
+from db import DatabaseHandler
 
 
 def allBuoys(db: object) -> dict:
@@ -13,12 +14,12 @@ def allBuoys(db: object) -> dict:
     if data:
         for buoy in data:
             buoys[buoy[0]] = {
-                                "buoyID": buoy[0],
-                                "stationID": buoy[1],
-                                "latitude": buoy[2],
-                                "longitude": buoy[3],
-                                "description": buoy[4]
-                }
+                "buoyID": buoy[0],
+                "stationID": buoy[1],
+                "latitude": buoy[2],
+                "longitude": buoy[3],
+                "description": buoy[4],
+            }
     return buoys
 
 
@@ -33,8 +34,14 @@ def parseBuoy(stationID) -> dict:
     # open the file, split lines, and define variables
     data = buoyRequest(stationID)
     content = data[0].splitlines()
-    dataDict = {'WDIR': None, 'WSPD': None, 'WVHT': None, 'DPD': None,
-                'MWD': None, 'WTMP': None}
+    dataDict = {
+        "WDIR": None,
+        "WSPD": None,
+        "WVHT": None,
+        "DPD": None,
+        "MWD": None,
+        "WTMP": None,
+    }
     firstRow = content[0].split()
 
     # iterate through the first row and map the buoy parameters to their
@@ -46,7 +53,7 @@ def parseBuoy(stationID) -> dict:
     return dataDict
 
 
-def buoyRequest(stationID) -> (tuple):
+def buoyRequest(stationID) -> tuple:
     """
     Function used to request the URL of the buoy and returns a
     tuple containing the request reponse and the status code.
@@ -54,7 +61,7 @@ def buoyRequest(stationID) -> (tuple):
     """
 
     # request the station
-    url = f'https://www.ndbc.noaa.gov/data/realtime2/{stationID}.txt'
+    url = f"https://www.ndbc.noaa.gov/data/realtime2/{stationID}.txt"
     response = requests.get(url)
 
     # check response and return text file or error depending on if it worked
@@ -62,8 +69,3 @@ def buoyRequest(stationID) -> (tuple):
         return (response.text, response.status_code)
     else:
         return (None, response.status_code)
-
-
-if __name__ == "__main__":
-    db = Database()
-    print(allBuoys(db))

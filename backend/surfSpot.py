@@ -1,8 +1,8 @@
-from dbClass import Database
+from db import DatabaseHandler
 
 
 class SurfSpot:
-    def __init__(self, spotID: int, db: object):
+    def __init__(self, spotID: int, db: DatabaseHandler):
         self._spotID = spotID
         self._userID = None
         self._spotName = None
@@ -72,9 +72,14 @@ class SurfSpot:
             spot["buoy2"] = data[6]
         return spot
 
-    def updateSpot(self, name: str, latitude: float,
-                   longitude: float, firstStation: str = None,
-                   secondStation: str = None) -> bool:
+    def updateSpot(
+        self,
+        name: str,
+        latitude: float,
+        longitude: float,
+        firstStation: str = None,
+        secondStation: str = None,
+    ) -> bool:
         """
         Updates a surf spot in the database. Returns True if successful and
         False otherwise.
@@ -84,14 +89,14 @@ class SurfSpot:
                 FROM Buoys WHERE stationID = %s), secondBuoyID = \
                 (SELECT buoyID FROM Buoys WHERE stationID = %s)\
                 WHERE spotID = %s"
-        params = [name, latitude, longitude, firstStation, secondStation,
-                  self._spotID]
+        params = [name, latitude, longitude, firstStation, secondStation, self._spotID]
         db = self._db
         result = db.executeQuery(query, params)
 
-        if not result:
-            return False
-        return True
+        # if not result:
+        #     return False
+        # return True
+        return bool(result)
 
     def getIdeal(self) -> dict:
         """
@@ -114,9 +119,15 @@ class SurfSpot:
             ideal["tideMin"] = data[7]
         return ideal
 
-    def createIdeal(self, windDir: str, swellDir: str,
-                    size: str, period: str, tideMax: float,
-                    tideMin: float) -> bool:
+    def createIdeal(
+        self,
+        windDir: str,
+        swellDir: str,
+        size: str,
+        period: str,
+        tideMax: float,
+        tideMin: float,
+    ) -> bool:
         """
         Creates an entry in the IdealConditions table for a spots
         ideal conditions. Only one entry allowed per spot. This
@@ -126,8 +137,7 @@ class SurfSpot:
                 swellDirection, waveSize, swellPeriod, tideUpper, tideLower)\
                 VALUES ((SELECT spotID FROM SurfSpots WHERE\
                 spotID = %s), %s, %s, %s, %s, %s, %s)"
-        params = [self._spotID, windDir, swellDir, size, period, tideMax,
-                  tideMin]
+        params = [self._spotID, windDir, swellDir, size, period, tideMax, tideMin]
         db = self._db
         result = db.executeQuery(query, params)
 
@@ -135,9 +145,15 @@ class SurfSpot:
             return False
         return True
 
-    def updateIdeal(self, windDir: str, swellDir: str,
-                    size: str, period: str, tideMax: float,
-                    tideMin: float) -> bool:
+    def updateIdeal(
+        self,
+        windDir: str,
+        swellDir: str,
+        size: str,
+        period: str,
+        tideMax: float,
+        tideMin: float,
+    ) -> bool:
         """
         Updates the ideal conditions for a specific surf spot. Returns
         True if successful and False otherwise.
@@ -145,8 +161,7 @@ class SurfSpot:
         query = "UPDATE IdealConditions SET windDirection = %s,\
                 swellDirection = %s, waveSize = %s, swellPeriod = %s,\
                 tideUpper = %s, tideLower = %s WHERE spotID = %s"
-        params = [windDir, swellDir, size, period, tideMax, tideMin,
-                  self._spotID]
+        params = [windDir, swellDir, size, period, tideMax, tideMin, self._spotID]
         db = self._db
         result = db.executeQuery(query, params)
 
@@ -167,9 +182,19 @@ class SurfSpot:
             return False
         return True
 
-    def saveSession(self, date: str, windSpd: int, windDir: int,
-                    swellHgt: float, swellPer: int, swellDir: int, tide: float,
-                    swellAct: str, tideDir: str, description: str) -> bool:
+    def saveSession(
+        self,
+        date: str,
+        windSpd: int,
+        windDir: int,
+        swellHgt: float,
+        swellPer: int,
+        swellDir: int,
+        tide: float,
+        swellAct: str,
+        tideDir: str,
+        description: str,
+    ) -> bool:
         """
         Saves a session to the SavedSessions Table
         """
@@ -179,18 +204,40 @@ class SurfSpot:
                 spotID FROM SurfSpots WHERE spotID = %s), (SELECT userID FROM\
                 Users WHERE userID = %s),%s, %s, %s, %s, %s, %s, %s, %s, %s,\
                 %s)"
-        params = [self._spotID, self._userID, date, windSpd, windDir, swellHgt,
-                  swellPer, swellDir, tide, swellAct, tideDir, description]
+        params = [
+            self._spotID,
+            self._userID,
+            date,
+            windSpd,
+            windDir,
+            swellHgt,
+            swellPer,
+            swellDir,
+            tide,
+            swellAct,
+            tideDir,
+            description,
+        ]
         db = self._db
         result = db.executeQuery(query, params)
         if not result:
             return False
         return True
 
-    def editSession(self, date: str, windSpd: int, windDir: int,
-                    swellHgt: float, swellPer: int, swellDir: int, tide: float,
-                    swellAct: str, tideDir: str, description: str,
-                    sessionID: int) -> bool:
+    def editSession(
+        self,
+        date: str,
+        windSpd: int,
+        windDir: int,
+        swellHgt: float,
+        swellPer: int,
+        swellDir: int,
+        tide: float,
+        swellAct: str,
+        tideDir: str,
+        description: str,
+        sessionID: int,
+    ) -> bool:
         """
         Edits a session in the SavedSessions Table
         """
@@ -198,9 +245,19 @@ class SurfSpot:
                 windDirection = %s, swellHeight = %s, swellPeriod = %s,\
                 swellDirection = %s, tide = %s, swellActivity = %s,\
                 tideDirection = %s, description = %s WHERE sessionID = %s"
-        params = [date, windSpd, windDir, swellHgt,
-                  swellPer, swellDir, tide, swellAct, tideDir, description,
-                  sessionID]
+        params = [
+            date,
+            windSpd,
+            windDir,
+            swellHgt,
+            swellPer,
+            swellDir,
+            tide,
+            swellAct,
+            tideDir,
+            description,
+            sessionID,
+        ]
         db = self._db
         result = db.executeQuery(query, params)
         if not result:
@@ -232,7 +289,7 @@ class SurfSpot:
                 "swellDir": sesh[7],
                 "tide": sesh[8],
                 "swellActivity": sesh[9],
-                "description": sesh[10]
+                "description": sesh[10],
             }
 
         return sessions
@@ -252,9 +309,15 @@ def deleteSession(sessionID: int, db: object) -> bool:
     return True
 
 
-def createSpot(userID: int, db: object, name: str, latitude: float,
-               longitude: float, firstStationID: str = None,
-               secondStationID: str = None) -> bool:
+def createSpot(
+    userID: int,
+    db: object,
+    name: str,
+    latitude: float,
+    longitude: float,
+    firstStationID: str = None,
+    secondStationID: str = None,
+) -> bool:
     """
     Creates a new surf spot and adds it to the database. Returns True if
     successful and False otherwise.
@@ -276,8 +339,7 @@ def createSpot(userID: int, db: object, name: str, latitude: float,
                 WHERE userID = %s), %s, %s, %s, (SELECT buoyID FROM Buoys\
                 WHERE stationID = %s), (SELECT buoyID FROM Buoys\
                 WHERE stationID = %s))"
-        params = (userID, name, latitude, longitude, firstStationID,
-                  secondStationID)
+        params = (userID, name, latitude, longitude, firstStationID, secondStationID)
 
     response = db.executeQuery(query, params)
     if not response:
@@ -325,28 +387,6 @@ def getAllSessions(userID: int, db: object) -> dict:
                 "description": sesh[10],
                 "name": sesh[11],
                 "sessionID": sesh[0],
-                "spotID": sesh[12]
+                "spotID": sesh[12],
             }
     return sessions
-
-
-if __name__ == "__main__":
-    db = Database()
-    # getAllSessions(1, db)
-    # d = createSpot(1, db, "billys", 420.32, 345.23)
-    # print(d)
-    # e = createSpot(1, db, "Tommy's", 420.32, 345.23, 1)
-    # f = createSpot(1, db, "Bommie's", 420.32, 345.23, 1, 2)
-    # print(getAllSpots(1, db))
-    # spot = SurfSpot(1, db)
-    # print(spot.deleteSpot())
-    print(deleteSession(1, db))
-    # spot.createIdeal("NW", "W", "Overhead", "Long", 3.00, -1.00)
-    # spot.saveSession("2024-06-28", 15, 270, 6.5, 16, 270,
-    # 3.9, "increasing", "slack", "Holy hell it was macking")
-
-    # print(spot.deleteSpot())
-    # spot.updateIdeal("NE", "WNW", "Triple Overhead", "Medium", 5.3, -0.6)
-
-    # SurfSpot(12, db)
-    # SurfSpot(13, db)

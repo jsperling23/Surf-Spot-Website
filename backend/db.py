@@ -1,39 +1,51 @@
-import mysql.connector
-from mysql.connector import errorcode
 import os
+import time
+
+import mysql.connector
 from dotenv import load_dotenv
+from mysql.connector import errorcode
+
+DEFAULT_CONN_POOL_SIZE = 3
 
 
-class Database:
-    def __init__(self):
+class DatabaseHandler:
+    def __init__(
+        self, user: str, password: str, db_name: str, db_host: str, pool_size: int
+    ):
         self._connected = False
         self._cnxpool = None
-        self.createPool()
+        # TODO: generally, it is not a good idea to call functions that
+        # can fail inside constructors -> this means that we have the following
+        # states of DatabaseHandler to handle wherever it is called:
+        # - object exists but db connection does not
+        # - object exists and db connection exists
+        # if our constructor never fails, we know we have the object to work with
+        # but its state might be questionable. Better to defer this to a factory.
+        self.__createPool(user, password, db_name, db_host, pool_size)
 
-    def status(self):
-        return self._connected
+    def status(self) -> bool:
+        """
+        Returns true if db is usable and false otherwise
+        """
+        # Remember, we have to check that the pool has been created successfully to retu
+        # a true status
+        return self._connected and self._cnxpool is not None
 
-    def createPool(self) -> None:
-        load_dotenv()
-        dbUser = os.getenv("dbUser")
-        dbPassword = os.getenv("dbPassword")
-        dbName = os.getenv("dbName")
-        dbHost = os.getenv("dbHost")
-
+    def __createPool(
+        self, user: str, password: str, db_name: str, db_host: str, pool_size: int
+    ) -> None:
         db_config = {
-            "user": dbUser,
-            "password": dbPassword,
-            "database": dbName,
-            "host": dbHost,
-            "pool_reset_session": True
+            "user": user,
+            "password": password,
+            "host": db_host,
+            "database": db_name,
+            "pool_reset_session": True,
         }
 
         try:
             cnxpool = mysql.connector.pooling.MySQLConnectionPool(
-                pool_name="pool",
-                pool_size=5,
-                **db_config
-                )
+                pool_name="pool", pool_size=pool_size, **db_config
+            )
             self._connected = True
             self._cnxpool = cnxpool
             print("pool successfully created")
@@ -45,8 +57,7 @@ class Database:
             else:
                 print(err)
 
-    def executeQuery(self, query: str, params: list, fetch: str = "all") -> \
-            list:
+    def executeQuery(self, query: str, params: list, fetch: str = "all") -> list:
         """
         Takes in a query and its parameters and returns the resulting list
         or an empty list if the query was unsuccessful. The fetch string is
@@ -91,3 +102,17 @@ class Database:
                 cnx.close()
 
         return data
+
+
+def factory(
+    user: str,
+    password: str,
+    db_name: str,
+    db_host: str,
+    pool_size: int = DEFAULT_CONN_POOL_SIZE,
+) -> DatabaseHandler | None:
+    """
+    Factory method for creating DatabaseHandler method
+    """
+    db = DatabaseHandler(user, password, db_name, db_host, pool_size)
+    return db if db.status() else None
