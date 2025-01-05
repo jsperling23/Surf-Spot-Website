@@ -1,26 +1,47 @@
 # import libraries
 import os
+
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required
 
 # import backend functions
+from appConfig import AppConfig
 from buoyParser import parseBuoy, allBuoys
 from haversineCalc import haversineCalc
 from user import User
-from dbClass import Database
+from dbClass import Database, factory
 from surfSpot import SurfSpot, createSpot, getAllSpots, getAllSessions, \
      deleteSession
 
+# setup config
+load_dotenv()
+config = AppConfig(
+    **{
+        "db_user": os.getenv("DB_USER"),
+        "db_password": os.getenv("DB_PASSWORD"),
+        "db_name": os.getenv("DB_NAME"),
+        "db_host": os.getenv("DB_HOST"),
+        "secret_key": os.getenv("SECRET_KEY"),
+    }
+)
+print(config)
+# connect to database
+db: Database | None = factory(
+    user=config.db_user,
+    password=config.db_password,
+    db_name=config.db_name,
+    db_host=config.db_host
+)
+
+if not db:
+    print("database connection failed")
+
 # setup flask server and login
 app = Flask(__name__)
-app.secret_key = os.getenv("secretKey")
+app.secret_key = config.secret_key
 login_manager = LoginManager()
 login_manager.init_app(app)
-
-# connect to database
-db = Database()
-if not db.status():
-    print("database connection failed")
 
 
 # Authenication and User routes

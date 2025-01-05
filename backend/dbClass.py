@@ -1,37 +1,38 @@
 import mysql.connector
+
 from mysql.connector import errorcode
-import os
-from dotenv import load_dotenv
+
+DEFAULT_CONN_POOL_SIZE = 3
 
 
 class Database:
-    def __init__(self):
+    def __init__(
+                self, user: str, password: str, db_name: str, db_host: str,
+                pool_size: int
+                ):
         self._connected = False
         self._cnxpool = None
-        self.createPool()
+        self.__createPool(user, password, db_name, db_host, pool_size)
 
     def status(self):
-        return self._connected
+        return self._connected and self._cnxpool is not None
 
-    def createPool(self) -> None:
-        load_dotenv()
-        dbUser = os.getenv("dbUser")
-        dbPassword = os.getenv("dbPassword")
-        dbName = os.getenv("dbName")
-        dbHost = os.getenv("dbHost")
-
+    def __createPool(
+                self, user: str, password: str, db_name: str, db_host: str,
+                pool_size: int
+    ) -> None:
         db_config = {
-            "user": dbUser,
-            "password": dbPassword,
-            "database": dbName,
-            "host": dbHost,
+            "user": user,
+            "password": password,
+            "database": db_name,
+            "host": db_host,
             "pool_reset_session": True
         }
 
         try:
             cnxpool = mysql.connector.pooling.MySQLConnectionPool(
                 pool_name="pool",
-                pool_size=5,
+                pool_size=pool_size,
                 **db_config
                 )
             self._connected = True
@@ -91,3 +92,17 @@ class Database:
                 cnx.close()
 
         return data
+
+
+def factory(
+    user: str,
+    password: str,
+    db_name: str,
+    db_host: str,
+    pool_size: int = DEFAULT_CONN_POOL_SIZE,
+) -> Database | None:
+    """
+    Factory method for creating Database object
+    """
+    db = Database(user, password, db_name, db_host, pool_size)
+    return db if db.status() else None
