@@ -8,13 +8,17 @@ DEFAULT_CONN_POOL_SIZE = 3
 class Database:
     def __init__(
                 self, user: str, password: str, db_name: str, db_host: str,
-                pool_size: int
+                pool_size: int, logger: object
                 ):
         self._connected = False
         self._cnxpool = None
+        self.logger = logger
         self.__createPool(user, password, db_name, db_host, pool_size)
 
-    def status(self):
+    def status(self) -> bool:
+        """
+        Returns true if db is usable and false otherwise
+        """
         return self._connected and self._cnxpool is not None
 
     def __createPool(
@@ -37,14 +41,14 @@ class Database:
                 )
             self._connected = True
             self._cnxpool = cnxpool
-            print("pool successfully created")
+            self.logger.info("pool successfully created")
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                print("Something is wrong with your user name or password")
+                self.logger.warning("Something is wrong with your user name or password")
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                print("Database does not exist")
+                self.logger.warning("Database does not exist")
             else:
-                print(err)
+                self.logger.warning(err)
 
     def executeQuery(self, query: str, params: list, fetch: str = "all") -> \
             list:
@@ -60,16 +64,16 @@ class Database:
         try:
             # get connection and execute query
             cnx = self._cnxpool.get_connection()
-            print("connection successful")
+            self.logger.info("connection successful")
             cursor = cnx.cursor()
-            print("Parameters:  ", params)
+            self.logger.info("Parameters:  %s", params)
             cursor.execute(query, params)
 
             # what to do with query depending on questions
             if query.startswith(("INSERT", "UPDATE", "DELETE")):
                 cnx.commit()
                 data = ["success", cursor.lastrowid]
-                print("Transaction committed")
+                self.logger.info("Transaction committed")
             elif fetch == "all":
                 data = cursor.fetchall()
             else:
@@ -78,11 +82,12 @@ class Database:
         # error handling
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                print("Something is wrong with your user name or password")
+                self.logger.warning("Something is wrong with your user name or\
+                                    password")
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                print("Database does not exist")
+                self.logger.warning("Database does not exist")
             else:
-                print(err)
+                self.logger.warning(err)
 
         # close any connections
         finally:
@@ -99,10 +104,11 @@ def factory(
     password: str,
     db_name: str,
     db_host: str,
-    pool_size: int = DEFAULT_CONN_POOL_SIZE,
+    logger: object,
+    pool_size: int = DEFAULT_CONN_POOL_SIZE
 ) -> Database | None:
     """
     Factory method for creating Database object
     """
-    db = Database(user, password, db_name, db_host, pool_size)
+    db = Database(user, password, db_name, db_host, pool_size, logger)
     return db if db.status() else None

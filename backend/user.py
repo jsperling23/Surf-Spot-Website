@@ -1,5 +1,5 @@
 import bcrypt
-
+from flask import current_app
 
 class User:
     def __init__(self, username: str, password: str, db: object) -> None:
@@ -52,7 +52,7 @@ class User:
         # find the user
         query = "SELECT * FROM Users WHERE username = %s"
         user = db.executeQuery(query, [username], "one")
-        print(user)
+        current_app.logger.info(user)
         if user:
             return User(user[1], user[2], db)
         else:
@@ -90,7 +90,7 @@ class User:
         if not User.checkIfExists(username, db):
             salt = bcrypt.gensalt()
             hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
-            print(type(hashed))
+            current_app.logger.info(type(hashed))
             params = [username, hashed]
             query = "INSERT INTO Users(username, password) VALUES(%s, %s);"
             db.executeQuery(query, params)

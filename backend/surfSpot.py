@@ -1,5 +1,5 @@
 from dbClass import Database
-
+from flask import current_app
 
 class SurfSpot:
     def __init__(self, spotID: int, db: object):
@@ -293,7 +293,7 @@ def getAllSpots(userID: int, db: object) -> dict:
     if data:
         for spot in data:
             current = SurfSpot(spot[0], db)
-            print(current)
+            current_app.logger.info(current)
             spots[spot[0]] = current.getSpot()
             spots[spot[0]]["ideal"] = current.getIdeal()
     return spots

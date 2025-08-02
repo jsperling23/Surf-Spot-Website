@@ -1,5 +1,7 @@
 # import libraries
 import os
+import datetime
+import logging
 
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
@@ -25,24 +27,25 @@ config = AppConfig(
         "secret_key": os.getenv("SECRET_KEY"),
     }
 )
-print(config)
-# connect to database
-db: Database | None = factory(
-    user=config.db_user,
-    password=config.db_password,
-    db_name=config.db_name,
-    db_host=config.db_host
-)
-
-if not db:
-    print("database connection failed")
 
 # setup flask server and login
 app = Flask(__name__)
 app.secret_key = config.secret_key
 login_manager = LoginManager()
 login_manager.init_app(app)
+app.logger.setLevel(logging.INFO)
 
+# connect to database
+db: Database | None = factory(
+    user=config.db_user,
+    password=config.db_password,
+    db_name=config.db_name,
+    logger=app.logger,
+    db_host=config.db_host
+)
+
+if not db:
+    raise Exception("Could not connect to db")
 
 # Authenication and User routes
 @login_manager.user_loader
@@ -53,6 +56,12 @@ def load_user(user_id):
     return User.get(user_id, db)
 
 
+@app.get("/health")
+def health():
+    return jsonify({"status": "Active", "serverTs": datetime.datetime.now()}),
+    200
+
+
 @app.route("/login", methods=['POST'])
 def login():
     """
@@ -60,6 +69,8 @@ def login():
     If the user or password is incorrect than a failure message is returned.
     """
     formData = request.json
+    if not formData:
+        return jsonify({"result": "Bad request, no data passed to form!"}), 400
     username = formData['username']
     password = formData['password']
     user = User.get(username, db)
@@ -67,7 +78,7 @@ def login():
         user.verifyPassword(password)
         if user.is_authenticated():
             login_user(user)
-            print("User Login Successful!")
+            app.logger.info("User Login Successful!")
             return jsonify({"result": "Login Successful",
                             "userID": user._userID}), 200
     return jsonify({"result": "Login Failed"}), 401
@@ -83,9 +94,12 @@ def createUser():
     internal error such as a bad database connection.
     """
     formData = request.json
+    if not formData:
+        return jsonify({"result": "Bad request, no data passed to form!"}), 400
     username = formData['username']
     password = formData['password']
-    print("username: ", username, "password: ", password)
+    app.logger.info(f"User: {username}")
+
     creation = User.createUser(username, password, db)
     if creation[0] is True:
         return jsonify({"result": "Account creation successful"}), 200
@@ -114,7 +128,7 @@ def logout():
     Function used to logout a user from a Flask-Login session
     """
     logout_user()
-    print("User logged out successfully")
+    app.logger.info("User logged out successfully")
     return jsonify({"result": "Logout Successful"}), 200
 
 
@@ -137,7 +151,7 @@ def buoyRequest():
     else:
         param = request.args.get("stationID")
         data = parseBuoy(param)
-        print(data)
+        app.logger.info(data)
         return jsonify(data)
 
 
@@ -175,6 +189,8 @@ def spotRoute():
 
     if request.method == "PUT":
         formData = request.json
+        if not formData:
+            return jsonify({"result": "Bad request"}), 400
 
         spotID = formData["spotID"]
         name = formData["name"]
@@ -191,10 +207,12 @@ def spotRoute():
         tideMin = formData["tideMin"]
         spot = SurfSpot(spotID, db)
         if spot.isValid:
-            result1 = spot.updateSpot(name, latitude, longitude,
-                                      firstStation, secondStation)
-            result2 = spot.updateIdeal(windDir, swellDir, size, period,
-                                       tideMax, tideMin)
+            result1 = spot.updateSpot(
+                name, latitude, longitude, firstStation, secondStation
+            )
+            result2 = spot.updateIdeal(
+                windDir, swellDir, size, period, tideMax, tideMin
+            )
             if result1 and result2:
                 return jsonify({"result": "Spot Updated"}), 201
             elif not result1 and result2 is True:
@@ -289,11 +307,20 @@ def savedSessions():
     """
     if request.method == "GET":
         userID = request.args.get('userID', type=int)
+        if not userID:
+            return jsonify({"result": "Bad request"}), 400
+
         data = getAllSessions(userID, db)
+        if not data:
+            data = []
+
         return jsonify(data)
 
     if request.method == "POST":
         formData = request.json
+        if not formData:
+            return jsonify({"result": "Bad request"}), 400
+
         spotID = formData["spotID"]
         spot = SurfSpot(spotID, db)
         date = formData["date"]
@@ -306,15 +333,28 @@ def savedSessions():
         swellAct = formData["swellAct"]
         tideDir = formData["tideDir"]
         description = formData["description"]
-        result = spot.saveSession(date, windSpd, windDir, swellHgt, swellPer,
-                                  swellDir, tide, swellAct, tideDir,
-                                  description)
+        result = spot.saveSession(
+            date,
+            windSpd,
+            windDir,
+            swellHgt,
+            swellPer,
+            swellDir,
+            tide,
+            swellAct,
+            tideDir,
+            description
+        )
+
         if result:
             return jsonify({"result": "Session saved"}), 201
         return jsonify({"result": "Error occurred"}), 409
 
     if request.method == "PUT":
         formData = request.json
+        if not formData:
+            return jsonify({"result": "Bad request"}), 400
+
         spotID = formData["spotID"]
         spot = SurfSpot(spotID, db)
         sessionID = formData["sessionID"]
@@ -328,15 +368,29 @@ def savedSessions():
         swellAct = formData["swellAct"]
         tideDir = formData["tideDir"]
         description = formData["description"]
-        result = spot.editSession(date, windSpd, windDir, swellHgt, swellPer,
-                                  swellDir, tide, swellAct, tideDir,
-                                  description, sessionID)
+        result = spot.editSession(
+            date,
+            windSpd,
+            windDir,
+            swellHgt,
+            swellPer,
+            swellDir,
+            tide,
+            swellAct,
+            tideDir,
+            description,
+            sessionID
+        )
+
         if result:
             return jsonify({"result": "Session Edited Successfully"}), 201
         return jsonify({"result": "Error occurred"}), 409
 
     if request.method == "DELETE":
         sessionID = request.args.get('sessionID', type=int)
+        if not sessionID:
+            return jsonify({"result": "Bad request"}), 400
+
         result = deleteSession(sessionID, db)
         if result:
             return jsonify({"result": "Session Deleted"}), 201
