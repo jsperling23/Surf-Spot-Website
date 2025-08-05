@@ -53,10 +53,10 @@ if __name__ == "__main__":
     # connect to mysql
     try:
         load_dotenv()
-        dbUser = os.getenv("dbUser")
-        dbPassword = os.getenv("dbPassword")
-        dbName = os.getenv("dbName")
-        dbHost = os.getenv("dbHost")
+        dbUser = os.getenv("DB_USER")
+        dbPassword = os.getenv("DB_PASSWORD")
+        dbName = os.getenv("DB_NAME")
+        dbHost = os.getenv("DB_HOST")
         cnx = mysql.connector.connect(user=dbUser,
                                       password=dbPassword,
                                       host=dbHost,
