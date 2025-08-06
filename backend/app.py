@@ -47,6 +47,7 @@ db: Database | None = factory(
 if not db:
     raise Exception("Could not connect to db")
 
+
 # Authenication and User routes
 @login_manager.user_loader
 def load_user(user_id):
@@ -58,8 +59,7 @@ def load_user(user_id):
 
 @app.get("/health")
 def health():
-    return jsonify({"status": "Active", "serverTs": datetime.datetime.now()}),
-    200
+    return jsonify({"status": "Active", "serverTs": datetime.datetime.now()}), 200
 
 
 @app.route("/login", methods=['POST'])
