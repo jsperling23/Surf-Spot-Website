@@ -1,5 +1,4 @@
 import mysql.connector
-
 from mysql.connector import errorcode
 
 DEFAULT_CONN_POOL_SIZE = 3
@@ -8,11 +7,12 @@ DEFAULT_CONN_POOL_SIZE = 3
 class Database:
     def __init__(
                 self, user: str, password: str, db_name: str, db_host: str,
-                pool_size: int, logger: object
+                pool_size: int, logger: object, testing: bool = False
                 ):
         self._connected = False
         self._cnxpool = None
         self.logger = logger
+        self.testing = testing
         self.__createPool(user, password, db_name, db_host, pool_size)
 
     def status(self) -> bool:
@@ -44,7 +44,8 @@ class Database:
             self.logger.info("pool successfully created")
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                self.logger.warning("Something is wrong with your user name or password")
+                self.logger.warning("Something is wrong with your \
+                                    user name or password")
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
                 self.logger.warning("Database does not exist")
             else:
@@ -70,7 +71,8 @@ class Database:
             cursor.execute(query, params)
 
             # what to do with query depending on questions
-            if query.startswith(("INSERT", "UPDATE", "DELETE")):
+            if query.startswith(("INSERT", "UPDATE", "DELETE")) and\
+                    not self.testing:
                 cnx.commit()
                 data = ["success", cursor.lastrowid]
                 self.logger.info("Transaction committed")
@@ -105,10 +107,16 @@ def factory(
     db_name: str,
     db_host: str,
     logger: object,
+    testing: bool = False,
     pool_size: int = DEFAULT_CONN_POOL_SIZE
 ) -> Database | None:
     """
     Factory method for creating Database object
     """
-    db = Database(user, password, db_name, db_host, pool_size, logger)
+    if testing:
+        db = Database(user, password, db_name, db_host,
+                      pool_size, logger, testing)
+    else:
+        db = Database(user, password, db_name,
+                      db_host, pool_size, logger)
     return db if db.status() else None
