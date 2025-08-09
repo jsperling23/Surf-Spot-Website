@@ -59,7 +59,8 @@ def load_user(user_id):
 
 @app.get("/health")
 def health():
-    return jsonify({"status": "Active", "serverTs": datetime.datetime.now()}), 200
+    return jsonify({"status": "Active",
+                    "serverTs": datetime.datetime.now()}), 200
 
 
 @app.route("/login", methods=['POST'])

@@ -1,6 +1,7 @@
 from dbClass import Database
 from flask import current_app
 
+
 class SurfSpot:
     def __init__(self, spotID: int, db: object):
         self._spotID = spotID
