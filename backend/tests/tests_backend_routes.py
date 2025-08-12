@@ -108,8 +108,19 @@ class TestRoutes():
         assert response.status_code == 200
         assert len(data) == 879
 
-    def test_request_all_fail(self, client):
+    def test_request_all_fail(self, client, monkeypatch):
         """
         Testing the response when there is no data returned
         """
-        # Create test that mocks allBuoys(db) returning none
+        monkeypatch.setattr("app.allBuoys", lambda db: None)
+        response = client.get('/request', query_string={'stationID': 'all'})
+        assert response.status_code == 404
+        assert json.loads(response.data) == {"result": "Error occurred"}
+
+    def test_request_station_fail(self, client, monkeypatch):
+        """
+        Testing the response when there is no data returned
+        """
+        response = client.get('/request')
+        assert response.status_code == 400
+        assert json.loads(response.data) == {"result": "No station ID passed"}
