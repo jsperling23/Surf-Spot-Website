@@ -146,14 +146,21 @@ def buoyRequest():
         data = allBuoys(db)
         if data:
             return jsonify(data), 200
-        return jsonify({"result": "Error occurred"}), 409
+        return jsonify({"result": "Error occurred"}), 404
 
     # get a single buoys data
     else:
         param = request.args.get("stationID")
-        data = parseBuoy(param)
-        app.logger.info(data)
-        return jsonify(data)
+        if param:
+            data = parseBuoy(param)
+            app.logger.info(data)
+            if data:
+                return jsonify(data), 200
+            return jsonify(
+                            {"error": f"No buoy found for stationID {param}"}
+                           ), 404
+        else:
+            return jsonify({"result": "No station ID passed"}), 400
 
 
 # Buoy data and surf spot routes
