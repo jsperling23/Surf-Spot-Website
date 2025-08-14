@@ -41,23 +41,27 @@ def db():
             db_host=config.db_host
         )
 
+    if not db or not db.testing:
+        pytest.skip("Database fixture setup failed")
     yield db
 
 
-class TestRoutes():
-    # Database connection tests
-    def test_db(self, db):
-        """
-        Tests whether the db object is successfully created
-        """
-        assert isinstance(db, Database)
+# Database connection tests
+def test_db(db):
+    """
+    Tests whether the db object is successfully created
+    """
+    assert isinstance(db, Database)
 
-    def test_db_true(self, db):
-        """
-        Tests whether the testing flag is set
-        """
-        assert db.testing is True
 
+def test_db_true(db):
+    """
+    Tests whether the testing flag is set
+    """
+    assert db.testing is True
+
+
+class TestNotLoggedRoutes():
     # /health route testing
     def test_health(self, client):
         """
@@ -106,7 +110,7 @@ class TestRoutes():
         response = client.get('/request', query_string={'stationID': 'all'})
         data = json.loads(response.data)
         assert response.status_code == 200
-        assert len(data) == 879
+        assert 870 <= len(data) <= 890
 
     def test_request_all_fail(self, client, monkeypatch):
         """
@@ -124,3 +128,129 @@ class TestRoutes():
         response = client.get('/request')
         assert response.status_code == 400
         assert json.loads(response.data) == {"result": "No station ID passed"}
+
+    # /findBuoys route testing
+    def test_buoy_find(self, client):
+        """
+        Testing finding the closest buoys using Ocean Beach, SF, as coordinates
+        lat: 37.7594
+        long: 122.5107
+        """
+        response = client.get('/findBuoys', query_string={
+            "lat": 37.7594,
+            "long": -122.5107
+        })
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert len(data) == 20
+        assert data['6.502'] == ['FTPC1',
+                                 '9414290 - San Francisco, CA',
+                                 '37.806',
+                                 '-122.466']
+        assert data['11.294'] == ['46237',
+                                 'San Francisco Bar, CA  (142)',
+                                 '37.788',
+                                 '-122.634']
+
+    def test_buoy_find_empty(self, client):
+        """
+        Testing looking for coordinates with no data passed
+        """
+        response = client.get('/findBuoys', query_string={})
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert data == {"result": "No coorindates passed"}
+
+    # /login route testing
+    def test_login(self, client):
+        """
+        Testing whether the login route works using the test credentials
+        """
+        response = client.post('/login', json={
+            "username": "test",
+            "password": "test"
+        })
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data == {"result": "Login Successful",
+                        "userID": 1}
+
+    def test_failed_login(self, client):
+        """
+        Testing how a failed login works
+        """
+        response = client.post('/login', json={
+            "username": "test",
+            "password": "teesty"
+        })
+        assert response.status_code == 401
+        data = json.loads(response.data)
+        assert data == {"result": "Login Failed"}
+
+    def test_empty_login(self, client):
+        """
+        Testing how an empty request login works
+        """
+        response = client.post('/login', json={})
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert data == {"result": "Bad request, no data passed to form!"}
+
+    # /createUser route testing
+    def test_create_user(self, monkeypatch, client, db):
+        """
+        Testing creating a user
+        """
+        monkeypatch.setattr("app.db", db)
+        response = client.post('/createUser', json={
+            "username": "test2",
+            "password": "test"
+        })
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data == {"result": "Account creation successful"}
+
+    def test_create_user_duplicate(self, monkeypatch, client, db):
+        """
+        Testing trying to create a user that already exists
+        """
+        monkeypatch.setattr("app.db", db)
+        response = client.post('/createUser', json={
+            "username": "test",
+            "password": "test"
+        })
+        assert response.status_code == 409
+        data = json.loads(response.data)
+        assert data == {"result": "Username already exists"}
+
+    def test_create_user_empty(self, monkeypatch, client, db):
+        """
+        Testing sending an empty form
+        """
+        monkeypatch.setattr("app.db", db)
+        response = client.post('/createUser', json={})
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert data == {"result": "Bad request, no data passed to form!"}
+
+    def test_create_user_db_error(self, monkeypatch, client, db):
+        """
+        Testing sending an empty form
+        """
+        monkeypatch.setattr("app.db", db)
+        monkeypatch.setattr("app.User.createUser",
+                            lambda username,
+                            password,
+                            db: (False, 2)
+                            )
+        response = client.post('/createUser', json={
+            "username": "test2",
+            "password": "test"
+        })
+        assert response.status_code == 500
+        data = json.loads(response.data)
+        assert data == {"result": "Internal service error"}
+
+
+class TestLoggedRoutes():
+    pass

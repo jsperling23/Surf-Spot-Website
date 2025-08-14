@@ -174,8 +174,10 @@ def findBuoys():
     lat = request.args.get('lat', type=float)
     long = request.args.get('long', type=float)
     coord = (lat, long)
-    data = haversineCalc(coord, db)
-    return jsonify(data)
+    if coord[0] and coord[1]:
+        data = haversineCalc(coord, db)
+        return jsonify(data), 200
+    return jsonify({"result": "No coorindates passed"}), 400
 
 
 @app.route("/surfSpot", methods=["GET", "PUT", "POST", "DELETE"])

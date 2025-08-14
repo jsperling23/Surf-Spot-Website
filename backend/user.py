@@ -87,6 +87,8 @@ class User:
                 (False, 1): Username already exists
                 (False, 2): Error occurred when connection to database
         """
+        if not db:
+            return (False, 2)
         if not User.checkIfExists(username, db):
             salt = bcrypt.gensalt()
             hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
