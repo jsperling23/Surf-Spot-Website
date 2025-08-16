@@ -13,9 +13,9 @@ def client():
     # Setup flask testing client
     app_context = app.app_context()
     app_context.push()
-    client = app.test_client()
-    app.testing = True
-    yield client
+    with app.test_client() as client:
+        client.testing = True
+        yield client
 
 
 @pytest.fixture(scope='module')
@@ -26,7 +26,7 @@ def db():
         **{
             "db_user": os.getenv("DB_USER"),
             "db_password": os.getenv("DB_PASSWORD"),
-            "db_name": os.getenv("DB_NAME"),
+            "db_name": os.getenv("DB_NAME_TEST"),
             "db_host": os.getenv("DB_HOST"),
             "secret_key": os.getenv("SECRET_KEY"),
         }
@@ -37,7 +37,6 @@ def db():
             password=config.db_password,
             db_name=config.db_name,
             logger=app.logger,
-            testing=True,
             db_host=config.db_host
         )
 
@@ -71,6 +70,14 @@ class TestNotLoggedRoutes():
         data = json.loads(response.data)
         assert response.status_code == 200
         assert data['status'] == 'Active'
+
+    # test whether trying to access a protected route fails
+    def test_not_logged_auth(self, client):
+        """
+        Tests whether the /auth route fails when requesting not logged in
+        """
+        response = client.get('/auth')
+        assert response.status_code == 401
 
     # /request route testing
     def test_request(self, client):
@@ -148,9 +155,9 @@ class TestNotLoggedRoutes():
                                  '37.806',
                                  '-122.466']
         assert data['11.294'] == ['46237',
-                                 'San Francisco Bar, CA  (142)',
-                                 '37.788',
-                                 '-122.634']
+                                  'San Francisco Bar, CA  (142)',
+                                  '37.788',
+                                  '-122.634']
 
     def test_buoy_find_empty(self, client):
         """
@@ -253,4 +260,10 @@ class TestNotLoggedRoutes():
 
 
 class TestLoggedRoutes():
-    pass
+    # /auth route testing
+    def test_auth(self, client):
+        """
+        Tests whether accessing the /auth route while logged in works
+        """
+        response = client.get('/auth')
+        assert response.status_code == 200

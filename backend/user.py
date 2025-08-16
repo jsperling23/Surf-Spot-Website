@@ -1,6 +1,7 @@
 import bcrypt
 from flask import current_app
 
+
 class User:
     def __init__(self, username: str, password: str, db: object) -> None:
         self._username = username

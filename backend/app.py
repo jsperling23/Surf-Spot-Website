@@ -48,7 +48,11 @@ if not db:
     raise Exception("Could not connect to db")
 
 
-# Authenication and User routes
+# ------------------------------------------------------------ #
+# -------------------- UNPROTECTED ROUTES -------------------- #
+# ------------------------------------------------------------ #
+
+
 @login_manager.user_loader
 def load_user(user_id):
     """
@@ -110,29 +114,6 @@ def createUser():
         return jsonify({"result": "Internal service error"}), 500
 
 
-@app.route("/auth", methods=["GET", "OPTIONS"])
-@login_required
-def auth():
-    """
-    Used by the frontend to quickly verify if the user is logged in when
-    navigating between pages. It will either return an error if the user
-    is not logged in or it simply returns an empty string if the
-    user is logged in
-    """
-    return ""
-
-
-@app.route("/logout")
-@login_required
-def logout():
-    """
-    Function used to logout a user from a Flask-Login session
-    """
-    logout_user()
-    app.logger.info("User logged out successfully")
-    return jsonify({"result": "Logout Successful"}), 200
-
-
 @app.get("/request")
 def buoyRequest():
     """
@@ -178,6 +159,34 @@ def findBuoys():
         data = haversineCalc(coord, db)
         return jsonify(data), 200
     return jsonify({"result": "No coorindates passed"}), 400
+
+
+# ------------------------------------------------------------ #
+# --------------------- PROTECTED ROUTES --------------------- #
+# ------------------------------------------------------------ #
+
+
+@app.route("/auth", methods=["GET", "OPTIONS"])
+@login_required
+def auth():
+    """
+    Used by the frontend to quickly verify if the user is logged in when
+    navigating between pages. It will either return an error if the user
+    is not logged in or it simply returns an empty string if the
+    user is logged in
+    """
+    return ""
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    """
+    Function used to logout a user from a Flask-Login session
+    """
+    logout_user()
+    app.logger.info("User logged out successfully")
+    return jsonify({"result": "Logout Successful"}), 200
 
 
 @app.route("/surfSpot", methods=["GET", "PUT", "POST", "DELETE"])
