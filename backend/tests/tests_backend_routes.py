@@ -1,21 +1,12 @@
 import json
 import os
 import pytest
+import subprocess
 
 from app import app
 from dbClass import Database, factory
 from appConfig import AppConfig
 from dotenv import load_dotenv
-
-
-@pytest.fixture(scope='module')
-def client():
-    # Setup flask testing client
-    app_context = app.app_context()
-    app_context.push()
-    with app.test_client() as client:
-        client.testing = True
-        yield client
 
 
 @pytest.fixture(scope='module')
@@ -40,9 +31,36 @@ def db():
             db_host=config.db_host
         )
 
-    if not db or not db.testing:
+    if not db:
         pytest.skip("Database fixture setup failed")
+
+    # Setup test DB schema and fill buoy table
+    with open("database/ddl.sql", "r") as f:
+        subprocess.run(
+            ["mysql", "-u", config.db_user, f"-p{config.db_password}", config.db_name],
+            stdin=f,
+            check=True
+        )
+
+    with open("database/buoy_backup.sql", "r") as f:
+        subprocess.run(
+            ["mysql", "-u", config.db_user, f"-p{config.db_password}", config.db_name],
+            stdin=f,
+            check=True
+        )
     yield db
+
+    # Clear test db after finishing
+    #db.executeQuery("DROP TABLE IF EXISTS Buoys, Users, SurfSpots,\
+                    #IdealConditions, SavedSessions;", [])
+
+
+@pytest.fixture(scope='module')
+def client():
+    # Setup flask testing client
+    with app.test_client() as client:
+        client.testing = True
+        yield client
 
 
 # Database connection tests
@@ -51,13 +69,6 @@ def test_db(db):
     Tests whether the db object is successfully created
     """
     assert isinstance(db, Database)
-
-
-def test_db_true(db):
-    """
-    Tests whether the testing flag is set
-    """
-    assert db.testing is True
 
 
 class TestNotLoggedRoutes():
@@ -110,10 +121,11 @@ class TestNotLoggedRoutes():
             "result": "No station ID passed"
         }
 
-    def test_request_all(self, client):
+    def test_request_all(self, client, db):
         """
         Testing the length of response when the 'all' is passed in
         """
+        app.db = db
         response = client.get('/request', query_string={'stationID': 'all'})
         data = json.loads(response.data)
         assert response.status_code == 200
@@ -123,12 +135,13 @@ class TestNotLoggedRoutes():
         """
         Testing the response when there is no data returned
         """
+        app.db = db
         monkeypatch.setattr("app.allBuoys", lambda db: None)
         response = client.get('/request', query_string={'stationID': 'all'})
         assert response.status_code == 404
         assert json.loads(response.data) == {"result": "Error occurred"}
 
-    def test_request_station_fail(self, client, monkeypatch):
+    def test_request_station_fail(self, client):
         """
         Testing the response when there is no data returned
         """
@@ -173,6 +186,8 @@ class TestNotLoggedRoutes():
         """
         Testing whether the login route works using the test credentials
         """
+        import app  # reference the module Flask is using
+        app.db = db
         response = client.post('/login', json={
             "username": "test",
             "password": "test"
@@ -208,9 +223,9 @@ class TestNotLoggedRoutes():
         """
         Testing creating a user
         """
-        monkeypatch.setattr("app.db", db)
+        app.db = db
         response = client.post('/createUser', json={
-            "username": "test2",
+            "username": "test",
             "password": "test"
         })
         assert response.status_code == 200
@@ -221,7 +236,7 @@ class TestNotLoggedRoutes():
         """
         Testing trying to create a user that already exists
         """
-        monkeypatch.setattr("app.db", db)
+        app.db = db
         response = client.post('/createUser', json={
             "username": "test",
             "password": "test"
@@ -230,11 +245,11 @@ class TestNotLoggedRoutes():
         data = json.loads(response.data)
         assert data == {"result": "Username already exists"}
 
-    def test_create_user_empty(self, monkeypatch, client, db):
+    def test_create_user_empty(self, client, db):
         """
         Testing sending an empty form
         """
-        monkeypatch.setattr("app.db", db)
+        app.db = db
         response = client.post('/createUser', json={})
         assert response.status_code == 400
         data = json.loads(response.data)
@@ -244,7 +259,7 @@ class TestNotLoggedRoutes():
         """
         Testing sending an empty form
         """
-        monkeypatch.setattr("app.db", db)
+        app.db = db
         monkeypatch.setattr("app.User.createUser",
                             lambda username,
                             password,
