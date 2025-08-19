@@ -36,7 +36,7 @@ login_manager.init_app(app)
 app.logger.setLevel(logging.INFO)
 
 # connect to database
-db: Database | None = factory(
+db_handler: Database | None = factory(
     user=config.db_user,
     password=config.db_password,
     db_name=config.db_name,
@@ -44,7 +44,7 @@ db: Database | None = factory(
     db_host=config.db_host
 )
 
-if not db:
+if not db_handler:
     raise Exception("Could not connect to db")
 
 
@@ -58,7 +58,7 @@ def load_user(user_id):
     """
     handle user login/authentication
     """
-    return User.get(user_id, db)
+    return User.get(user_id, db_handler)
 
 
 @app.get("/health")
@@ -73,6 +73,7 @@ def login():
     This function is used to authenicate a user and add then to a session.
     If the user or password is incorrect than a failure message is returned.
     """
+    db = db_handler
     formData = request.json
     if not formData:
         return jsonify({"result": "Bad request, no data passed to form!"}), 400
@@ -98,6 +99,7 @@ def createUser():
     Otherwise, it will return 200 if successful or 500 if there is some
     internal error such as a bad database connection.
     """
+    db = db_handler
     formData = request.json
     if not formData:
         return jsonify({"result": "Bad request, no data passed to form!"}), 400
@@ -121,6 +123,7 @@ def buoyRequest():
     To use this route the following request URL should be utilized:
     /request?stationID=<string>
     """
+    db = db_handler
 
     # get all buoys
     if request.args.get("stationID") == "all":
@@ -152,6 +155,7 @@ def findBuoys():
     URL to use by frontend:
     /findBuoys?lat=<float>&long=<float>
     """
+    db = db_handler
     lat = request.args.get('lat', type=float)
     long = request.args.get('long', type=float)
     coord = (lat, long)
@@ -201,6 +205,8 @@ def spotRoute():
     PUT: Edits both the ideal conditions and spot data. Avoids
     multiple requests to the backend this way.
     """
+    db = db_handler
+
     if request.method == "GET":
         userID = request.args.get('userID', type=int)
         data = getAllSpots(userID, db)
@@ -275,6 +281,8 @@ def ideal():
     conditions for a surf spot. Returns 201 if successful and 401
     otherwise.
     """
+    db = db_handler
+
     if request.method == "GET":
         spotID = request.args.get("spotID")
         spot = SurfSpot(spotID, db)
@@ -324,6 +332,8 @@ def savedSessions():
     surf sessions. POST returns a 201 if successful and a 409
     error code otherwise
     """
+    db = db_handler
+
     if request.method == "GET":
         userID = request.args.get('userID', type=int)
         if not userID:

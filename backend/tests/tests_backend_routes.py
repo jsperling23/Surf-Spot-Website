@@ -51,8 +51,8 @@ def db():
     yield db
 
     # Clear test db after finishing
-    #db.executeQuery("DROP TABLE IF EXISTS Buoys, Users, SurfSpots,\
-                    #IdealConditions, SavedSessions;", [])
+    db.executeQuery("DROP TABLE IF EXISTS Buoys, Users, SurfSpots,\
+                    IdealConditions, SavedSessions;", [])
 
 
 @pytest.fixture(scope='module')
@@ -150,12 +150,13 @@ class TestNotLoggedRoutes():
         assert json.loads(response.data) == {"result": "No station ID passed"}
 
     # /findBuoys route testing
-    def test_buoy_find(self, client):
+    def test_buoy_find(self, client, monkeypatch, db):
         """
         Testing finding the closest buoys using Ocean Beach, SF, as coordinates
         lat: 37.7594
         long: 122.5107
         """
+        monkeypatch.setattr("app.db_handler", db)
         response = client.get('/findBuoys', query_string={
             "lat": 37.7594,
             "long": -122.5107
@@ -181,13 +182,67 @@ class TestNotLoggedRoutes():
         data = json.loads(response.data)
         assert data == {"result": "No coorindates passed"}
 
+    # /createUser route testing
+    def test_create_user(self, monkeypatch, client, db):
+        """
+        Testing creating a user
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.post('/createUser', json={
+            "username": "test",
+            "password": "test"
+        })
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data == {"result": "Account creation successful"}
+
+    def test_create_user_duplicate(self, monkeypatch, client, db):
+        """
+        Testing trying to create a user that already exists
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.post('/createUser', json={
+            "username": "test",
+            "password": "test"
+        })
+        assert response.status_code == 409
+        data = json.loads(response.data)
+        assert data == {"result": "Username already exists"}
+
+    def test_create_user_empty(self, client, db, monkeypatch):
+        """
+        Testing sending an empty form
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.post('/createUser', json={})
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert data == {"result": "Bad request, no data passed to form!"}
+
+    def test_create_user_db_error(self, monkeypatch, client, db):
+        """
+        Testing sending an empty form
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        monkeypatch.setattr("app.User.createUser",
+                            lambda username,
+                            password,
+                            db: (False, 2)
+                            )
+        response = client.post('/createUser', json={
+            "username": "test2",
+            "password": "test"
+        })
+        assert response.status_code == 500
+        data = json.loads(response.data)
+        assert data == {"result": "Internal service error"}
+
     # /login route testing
-    def test_login(self, client):
+    def test_login(self, client, monkeypatch, db):
         """
         Testing whether the login route works using the test credentials
         """
-        import app  # reference the module Flask is using
-        app.db = db
+        monkeypatch.setattr("app.db_handler", db)
         response = client.post('/login', json={
             "username": "test",
             "password": "test"
@@ -217,61 +272,6 @@ class TestNotLoggedRoutes():
         assert response.status_code == 400
         data = json.loads(response.data)
         assert data == {"result": "Bad request, no data passed to form!"}
-
-    # /createUser route testing
-    def test_create_user(self, monkeypatch, client, db):
-        """
-        Testing creating a user
-        """
-        app.db = db
-        response = client.post('/createUser', json={
-            "username": "test",
-            "password": "test"
-        })
-        assert response.status_code == 200
-        data = json.loads(response.data)
-        assert data == {"result": "Account creation successful"}
-
-    def test_create_user_duplicate(self, monkeypatch, client, db):
-        """
-        Testing trying to create a user that already exists
-        """
-        app.db = db
-        response = client.post('/createUser', json={
-            "username": "test",
-            "password": "test"
-        })
-        assert response.status_code == 409
-        data = json.loads(response.data)
-        assert data == {"result": "Username already exists"}
-
-    def test_create_user_empty(self, client, db):
-        """
-        Testing sending an empty form
-        """
-        app.db = db
-        response = client.post('/createUser', json={})
-        assert response.status_code == 400
-        data = json.loads(response.data)
-        assert data == {"result": "Bad request, no data passed to form!"}
-
-    def test_create_user_db_error(self, monkeypatch, client, db):
-        """
-        Testing sending an empty form
-        """
-        app.db = db
-        monkeypatch.setattr("app.User.createUser",
-                            lambda username,
-                            password,
-                            db: (False, 2)
-                            )
-        response = client.post('/createUser', json={
-            "username": "test2",
-            "password": "test"
-        })
-        assert response.status_code == 500
-        data = json.loads(response.data)
-        assert data == {"result": "Internal service error"}
 
 
 class TestLoggedRoutes():
