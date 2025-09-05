@@ -282,3 +282,38 @@ class TestLoggedRoutes():
         """
         response = client.get('/auth')
         assert response.status_code == 200
+
+    # /surfSpot route testing
+    def test_create_spot(self, client, monkeypatch, db):
+        """
+        Test the reponse when creating a new surf spot
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.post('/surfSpot', json={
+            "userID": 1,
+            "name": "Ocean Beach",
+            "latitude": 37.690,
+            "longitude": -122.520,
+            "firstBuoyID": '46237',
+            "secondBuoyID": '46026'
+        })
+
+        assert response.status_code == 201
+        data = json.loads(response.data)
+        assert data == {"result": "Spot Created", "spotID": 1}
+
+    def test_create_spot_err(self, client, monkeypatch):
+        """
+        Tests whether a failed spot creation returns an error
+        """
+        monkeypatch.setattr("app.createSpot", lambda *args, **kwargs: False)
+        response = client.post('/surfSpot', json={
+            "userID": 1,
+            "name": "Ocean Beach",
+            "latitude": 37.690,
+            "longitude": -122.520,
+            "firstBuoyID": '46237',
+            "secondBuoyID": '46026'
+        })
+        assert response.status_code == 409
+
