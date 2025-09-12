@@ -210,7 +210,7 @@ def spotRoute():
     if request.method == "GET":
         userID = request.args.get('userID', type=int)
         data = getAllSpots(userID, db)
-        return jsonify(data)
+        return jsonify(data), 200
 
     if request.method == "PUT":
         formData = request.json

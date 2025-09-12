@@ -283,7 +283,8 @@ class TestLoggedRoutes():
         response = client.get('/auth')
         assert response.status_code == 200
 
-    # /surfSpot route testing
+    # /surfSpot and /ideal route testing, need to run together due to how
+    # they're coupled when updating the spot
     def test_create_spot(self, client, monkeypatch, db):
         """
         Test the reponse when creating a new surf spot
@@ -302,6 +303,25 @@ class TestLoggedRoutes():
         data = json.loads(response.data)
         assert data == {"result": "Spot Created", "spotID": 1}
 
+    def test_create_ideal(self, client, monkeypatch, db):
+        """
+        Tests creating the ideal conditions for the surf spot made in
+        the test above.
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.post('/ideal', json={
+            "spotID": 1,
+            "windDir": 270,
+            "swellDir": 182,
+            "size": "Overhead",
+            "period": "Long",
+            "tideMax": 3.0,
+            "tideMin": 1.0
+        })
+        assert response.status_code == 201
+        data = json.loads(response.data)
+        assert data == {"result": "Ideal Created"}
+
     def test_create_spot_err(self, client, monkeypatch):
         """
         Tests whether a failed spot creation returns an error
@@ -317,3 +337,54 @@ class TestLoggedRoutes():
         })
         assert response.status_code == 409
 
+    def test_get_spot(self, client, monkeypatch, db):
+        """
+        Tests getting the surf spots for a particular user
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.get('/surfSpot', query_string={'userID': 1})
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data == {'1':
+                        {'buoy1': '46237',
+                         'buoy2': '46026',
+                         'ideal': {
+                            'conditionID': 1,
+                            'period': 'Long',
+                            'spotID': 1,
+                            'swellDir': '182',
+                            'tideMax': '3.0',
+                            'tideMin': '1.0',
+                            'waveSize': 'Overhead',
+                            'windDir': '270',
+                         },
+                         'latitude':
+                         '37.690',
+                         'longitude': '-122.520',
+                         'name': 'Ocean Beach',
+                         'spotID': 1,
+                         'userID': 1}
+                        }
+
+    def test_update_spot(self, client, monkeypatch, db):
+        """
+        Tests updating a surf spot
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.put('/surfSpot', json={
+            "spotID": 1,
+            "name": "Ocean Changed Beach",
+            "latitude": 45.0,
+            "longitude": -125,
+            "firstStation": '31004',
+            "secondStation": '15001',
+            "windDir": 340,
+            "swellDir": 270,
+            "size": "Double Overhead",
+            "period": "Short",
+            "tideMax": 7.0,
+            "tideMin": 2.0
+        })
+        assert response.status_code == 201
+        data = json.loads(response.data)
+        assert data == {"result": "Spot Updated"}
