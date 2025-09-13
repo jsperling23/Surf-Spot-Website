@@ -241,11 +241,11 @@ def spotRoute():
             if result1 and result2:
                 return jsonify({"result": "Spot Updated"}), 201
             elif not result1 and result2 is True:
-                return jsonify({"result": "Error occurred during\
-                                spot update"}), 409
+                return jsonify({"result": "Error occurred during "
+                                "spot update"}), 409
             elif not result2 and result1 is True:
-                return jsonify({"result": "Error occurred during\
-                                ideal update"}), 409
+                return jsonify({"result": "Error occurred during "
+                                "ideal update"}), 409
         return jsonify({"result": "Error occurred"}), 409
 
     if request.method == "DELETE":
