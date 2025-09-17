@@ -511,3 +511,49 @@ class TestLoggedRoutes():
         assert response.status_code == 409
         data = json.loads(response.data)
         assert data == {"result": "Error occurred"}
+
+    def test_session_creation(self, client, monkeypatch, db):
+        """
+        Testing the response when creating a surf session
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.post('/Sessions', json={
+            "date": "2025-04-20",
+            "spotID": 1,
+            "windSpd": 15,
+            "windDir": 180,
+            "swellHgt": 4.0,
+            "swellPer": 12,
+            "swellDir": 270,
+            "tide": 2.5,
+            "swellAct": "Rising",
+            "tideDir": "Dropping",
+            "description": "Absolutely pumping brah"
+        })
+        assert response.status_code == 201
+        data = json.loads(response.data)
+        assert data == {"result": "Session saved"}
+
+    def test_session_creation_error(self, client, monkeypatch, db):
+        """
+        Testing the response when there is an error in the session creation.
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        monkeypatch.setattr("app.SurfSpot.saveSession",
+                            lambda *args, **kwargs: False)
+        response = client.post('/Sessions', json={
+            "date": "2025-04-20",
+            "spotID": 1,
+            "windSpd": 15,
+            "windDir": 180,
+            "swellHgt": 4.0,
+            "swellPer": 12,
+            "swellDir": 270,
+            "tide": 2.5,
+            "swellAct": "Rising",
+            "tideDir": "Dropping",
+            "description": "Absolutely pumping brah"
+        })
+        assert response.status_code == 409
+        data = json.loads(response.data)
+        assert data == {"result": "Error occurred"}
