@@ -121,11 +121,12 @@ class TestNotLoggedRoutes():
             "result": "No station ID passed"
         }
 
-    def test_request_all(self, client, db):
+    def test_request_all(self, client, db, monkeypatch):
         """
         Testing the length of response when the 'all' is passed in
         """
         app.db = db
+        monkeypatch.setattr("app.db_handler", db)
         response = client.get('/request', query_string={'stationID': 'all'})
         data = json.loads(response.data)
         assert response.status_code == 200
@@ -276,7 +277,7 @@ class TestNotLoggedRoutes():
 
 class TestLoggedRoutes():
     # /auth route testing
-    def test_auth(self, client):
+    def test_auth(self, client, monkeypatch, db):
         """
         Tests whether accessing the /auth route while logged in works
         """
@@ -557,3 +558,26 @@ class TestLoggedRoutes():
         assert response.status_code == 409
         data = json.loads(response.data)
         assert data == {"result": "Error occurred"}
+
+    def test_session_edit(self, client, monkeypatch, db):
+        """
+        Test editing a surf session and the response.
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.put('/Sessions', json={
+            "date": "2025-04-20",
+            "spotID": 1,
+            "sessionID": 1,
+            "windSpd": 20,
+            "windDir": 170,
+            "swellHgt": 4.0,
+            "swellPer": 12,
+            "swellDir": 150,
+            "tide": 2.5,
+            "swellAct": "Dropping",
+            "tideDir": "Rising",
+            "description": "I've been edited!!"
+        })
+        assert response.status_code == 201
+        data = json.loads(response.data)
+        assert data == {"result": "Session Edited Successfully"}
