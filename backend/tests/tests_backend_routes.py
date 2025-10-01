@@ -512,7 +512,8 @@ class TestLoggedRoutes():
         assert response.status_code == 409
         data = json.loads(response.data)
         assert data == {"result": "Error occurred"}
-
+    
+    # /Sessions tests
     def test_session_creation(self, client, monkeypatch, db):
         """
         Testing the response when creating a surf session
@@ -559,6 +560,17 @@ class TestLoggedRoutes():
         data = json.loads(response.data)
         assert data == {"result": "Error occurred"}
 
+    def test_session_edit_empty(self, client, monkeypatch, db):
+        """
+        Testing what happens when sending an empty request to create a
+        session.
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.post('/Sessions', json={})
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert data == {"result": "Bad request"}
+
     def test_session_edit(self, client, monkeypatch, db):
         """
         Test editing a surf session and the response.
@@ -581,3 +593,128 @@ class TestLoggedRoutes():
         assert response.status_code == 201
         data = json.loads(response.data)
         assert data == {"result": "Session Edited Successfully"}
+
+    def test_session_edit_error(self, client, monkeypatch, db):
+        """
+        Testing what happens when editing a session and an error occurs
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        monkeypatch.setattr("app.SurfSpot.editSession",
+                            lambda *args, **kwargs: False)
+        response = client.put('/Sessions', json={
+            "date": "2025-04-20",
+            "spotID": 1,
+            "sessionID": 1,
+            "windSpd": 20,
+            "windDir": 170,
+            "swellHgt": 4.0,
+            "swellPer": 12,
+            "swellDir": 150,
+            "tide": 2.5,
+            "swellAct": "Dropping",
+            "tideDir": "Rising",
+            "description": "I've been edited!!"
+        })
+        assert response.status_code == 409
+        data = json.loads(response.data)
+        assert data == {"result": "Error occurred"}
+
+    def test_session_edit_empty(self, client, monkeypatch, db):
+        """
+        Testing what happens when sending an empty request to edit a
+        session.
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.put('/Sessions', json={})
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert data == {"result": "Bad request"}
+
+    def test_session_get(self, client, monkeypatch, db):
+        """
+        Test getting a surf session that has been made.
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.get('/Sessions', query_string={'userID': 1})
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data == {'1':
+                        {'date': 'Sun, 20 Apr 2025 00:00:00 GMT',
+                            'description': "I've been edited!!",
+                            'name': 'Ocean Changed Beach',
+                            'sessionID': 1,
+                            'spotID': 1,
+                            'swellActivity': 'Dropping',
+                            'swellDirection': 150,
+                            'swellHeight': '4.00',
+                            'swellPeriod': 12,
+                            'tide': '2.5',
+                            'tideDirecton': 'Rising',
+                            'windDirection': 170,
+                            'windSpeed': 20}}
+
+    def test_session_get_no_user_id(self, client, monkeypatch, db):
+        """
+        Testing getting a surf session when the user ID is not provided
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.get('/Sessions')
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert data == {"result": "Bad request"}
+
+    def test_session_error(self, client, monkeypatch, db):
+        """
+        Testing response when there is an error with getting the data or there
+        is no data
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.get('/Sessions', query_string={'userID': 2})
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data == {}
+
+    def delete_session_empty(self, client, monkeypatch, db):
+        """
+        Test response when trying to delete a session with no session ID
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.delete('/Sessions')
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert data == {"result": "Bad request"}
+
+    def delete_session_error(self, client, monkeypatch, db):
+        """
+        Test response when an error occurs when deleting a surf session
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        monkeypatch.setattr("app.deleteSession",
+                            lambda *args, **kwargs: False)
+        response = client.delete('/Sessions')
+        assert response.status_code == 409
+        data = json.loads(response.data)
+        assert data == {"result": "Error occurred"}
+
+    def test_delete_session(self, client, monkeypatch, db):
+        """
+        Test response when successfully deleting a surf session.
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.delete('/Sessions', query_string={'sessionID': 1})
+        assert response.status_code == 201
+        data = json.loads(response.data)
+        assert data == {"result": "Session Deleted"}
+
+    # Test logging out
+    def test_logout(self, client, monkeypatch, db):
+        """
+        Test that a user can successfully logout
+        """
+        monkeypatch.setattr("app.db_handler", db)
+        response = client.get("/logout")
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data == {"result": "Logout Successful"}
+        check_auth_response = client.get("/auth")
+        assert check_auth_response.status_code == 401

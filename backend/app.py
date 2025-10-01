@@ -341,9 +341,9 @@ def savedSessions():
 
         data = getAllSessions(userID, db)
         if not data:
-            data = []
+            data = {}
 
-        return jsonify(data)
+        return jsonify(data), 200
 
     if request.method == "POST":
         formData = request.json
