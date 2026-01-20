@@ -65,6 +65,7 @@ class Database:
         try:
             # get connection and execute query
             cnx = self._cnxpool.get_connection()
+            cnx.ping(reconnect=True, attempts=3, delay=2)
             self.logger.info("connection successful")
             cursor = cnx.cursor()
             self.logger.info("Parameters:  %s", params)

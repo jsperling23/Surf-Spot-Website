@@ -100,8 +100,3 @@ class User:
             return (True, 0)
         else:
             return (False, 1)
-
-
-if __name__ == "__main__":
-    query = "INSERT INTO Users(username, password) VALUES(%s, %s);"
-    print(query.startswith("INSERT"))

@@ -62,9 +62,3 @@ def haversineCalc(coord: tuple, db: object) -> dict:
     current_app.logger.info(sortedDict)
     return sortedDict
 
-
-if __name__ == "__main__":
-    db = Database()
-    coord = (34.113315, -121.124997)
-    data = haversineCalc(coord, db)
-    print(data)

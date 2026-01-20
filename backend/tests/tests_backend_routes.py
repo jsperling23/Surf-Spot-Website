@@ -718,3 +718,6 @@ class TestLoggedRoutes():
         assert data == {"result": "Logout Successful"}
         check_auth_response = client.get("/auth")
         assert check_auth_response.status_code == 401
+
+
+# to run from backend folder: PYTHONPATH=$(pwd) pytest tests/tests_backend_routes.py -v

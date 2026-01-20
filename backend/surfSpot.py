@@ -329,25 +329,3 @@ def getAllSessions(userID: int, db: object) -> dict:
                 "spotID": sesh[12]
             }
     return sessions
-
-
-if __name__ == "__main__":
-    db = Database()
-    # getAllSessions(1, db)
-    # d = createSpot(1, db, "billys", 420.32, 345.23)
-    # print(d)
-    # e = createSpot(1, db, "Tommy's", 420.32, 345.23, 1)
-    # f = createSpot(1, db, "Bommie's", 420.32, 345.23, 1, 2)
-    # print(getAllSpots(1, db))
-    # spot = SurfSpot(1, db)
-    # print(spot.deleteSpot())
-    print(deleteSession(1, db))
-    # spot.createIdeal("NW", "W", "Overhead", "Long", 3.00, -1.00)
-    # spot.saveSession("2024-06-28", 15, 270, 6.5, 16, 270,
-    # 3.9, "increasing", "slack", "Holy hell it was macking")
-
-    # print(spot.deleteSpot())
-    # spot.updateIdeal("NE", "WNW", "Triple Overhead", "Medium", 5.3, -0.6)
-
-    # SurfSpot(12, db)
-    # SurfSpot(13, db)

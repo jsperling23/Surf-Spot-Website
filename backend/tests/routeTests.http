@@ -1,7 +1,7 @@
 @hostname = http://localhost:5000
 
 // request for /SurfSpot
-GET {{hostname}}/surfSpot?userID=1
+GET {{hostname}}/request?stationID=all
 
 ###
 
