@@ -1,4 +1,4 @@
-from dbClass import Database
+from db_class import Database
 from flask import current_app
 
 
@@ -13,16 +13,16 @@ class SurfSpot:
         self._buoy2 = None
         self._db = db
         self.isValid = False
-        self.initSpot(self._spotID)
+        self.init_spot(self._spotID)
 
-    def initSpot(self, spotID: int) -> None:
+    def init_spot(self, spotID: int) -> None:
         """
         Gets all the information for a surf spot, called upon object
         initialization.
         """
         query = "SELECT * FROM SurfSpots WHERE spotID = %s"
         params = [spotID]
-        data = self._db.executeQuery(query, params, "one")
+        data = self._db.execute_query(query, params, "one")
         if data:
             self._userID = data[1]
             self._spotName = data[2]
@@ -36,7 +36,7 @@ class SurfSpot:
                 self._buoy1 = data[4]
         return
 
-    def getSpot(self) -> dict:
+    def get_spot(self) -> dict:
         """
         Returns a dictionary containing all the information about
         a surf spot. It will return an empty dictionary if something
@@ -62,7 +62,7 @@ class SurfSpot:
         params = [self._spotID]
         spot = {}
         db = self._db
-        data = db.executeQuery(query, params, "one")
+        data = db.execute_query(query, params, "one")
         if data:
             spot["spotID"] = data[0]
             spot["userID"] = data[1]
@@ -73,7 +73,7 @@ class SurfSpot:
             spot["buoy2"] = data[6]
         return spot
 
-    def updateSpot(self, name: str, latitude: float,
+    def update_spot(self, name: str, latitude: float,
                    longitude: float, firstStation: str = None,
                    secondStation: str = None) -> bool:
         """
@@ -88,13 +88,13 @@ class SurfSpot:
         params = [name, latitude, longitude, firstStation, secondStation,
                   self._spotID]
         db = self._db
-        result = db.executeQuery(query, params)
+        result = db.execute_query(query, params)
 
         if not result:
             return False
         return True
 
-    def getIdeal(self) -> dict:
+    def get_ideal(self) -> dict:
         """
         Gets the ideal conditions and returns them in a dictionary. If any
         issues pop up an empty dictionary is returned.
@@ -102,7 +102,7 @@ class SurfSpot:
         query = "SELECT * FROM IdealConditions WHERE spotID = %s"
         params = [self._spotID]
         db = self._db
-        data = db.executeQuery(query, params, "one")
+        data = db.execute_query(query, params, "one")
         ideal = {}
         if data:
             ideal["conditionID"] = data[0]
@@ -115,7 +115,7 @@ class SurfSpot:
             ideal["tideMin"] = data[7]
         return ideal
 
-    def createIdeal(self, windDir: str, swellDir: str,
+    def create_ideal(self, windDir: str, swellDir: str,
                     size: str, period: str, tideMax: float,
                     tideMin: float) -> bool:
         """
@@ -130,13 +130,13 @@ class SurfSpot:
         params = [self._spotID, windDir, swellDir, size, period, tideMax,
                   tideMin]
         db = self._db
-        result = db.executeQuery(query, params)
+        result = db.execute_query(query, params)
 
         if not result:
             return False
         return True
 
-    def updateIdeal(self, windDir: str, swellDir: str,
+    def update_ideal(self, windDir: str, swellDir: str,
                     size: str, period: str, tideMax: float,
                     tideMin: float) -> bool:
         """
@@ -149,26 +149,26 @@ class SurfSpot:
         params = [windDir, swellDir, size, period, tideMax, tideMin,
                   self._spotID]
         db = self._db
-        result = db.executeQuery(query, params)
+        result = db.execute_query(query, params)
 
         if not result:
             return False
         return True
 
-    def deleteSpot(self) -> bool:
+    def delete_spot(self) -> bool:
         """
         Deletes a spot from the SurfSpots table
         """
         query = "DELETE FROM SurfSpots WHERE spotID = %s"
         params = [self._spotID]
         db = self._db
-        result = db.executeQuery(query, params)
+        result = db.execute_query(query, params)
 
         if not result:
             return False
         return True
 
-    def saveSession(self, date: str, windSpd: int, windDir: int,
+    def save_session(self, date: str, windSpd: int, windDir: int,
                     swellHgt: float, swellPer: int, swellDir: int, tide: float,
                     swellAct: str, tideDir: str, description: str) -> bool:
         """
@@ -183,12 +183,12 @@ class SurfSpot:
         params = [self._spotID, self._userID, date, windSpd, windDir, swellHgt,
                   swellPer, swellDir, tide, swellAct, tideDir, description]
         db = self._db
-        result = db.executeQuery(query, params)
+        result = db.execute_query(query, params)
         if not result:
             return False
         return True
 
-    def editSession(self, date: str, windSpd: int, windDir: int,
+    def edit_session(self, date: str, windSpd: int, windDir: int,
                     swellHgt: float, swellPer: int, swellDir: int, tide: float,
                     swellAct: str, tideDir: str, description: str,
                     sessionID: int) -> bool:
@@ -203,12 +203,12 @@ class SurfSpot:
                   swellPer, swellDir, tide, swellAct, tideDir, description,
                   sessionID]
         db = self._db
-        result = db.executeQuery(query, params)
+        result = db.execute_query(query, params)
         if not result:
             return False
         return True
 
-    def getSessions(self) -> dict:
+    def get_sessions(self) -> dict:
         """
         Returns all sessions in a dictionary where the key is the date and
         the value is a dictionary containing the session information. If
@@ -219,7 +219,7 @@ class SurfSpot:
         query = "SELECT * FROM SavedSessions WHERE SpotID = %s"
         params = [self._spotID]
         db = self._db
-        data = db.executeQuery(query, params)
+        data = db.execute_query(query, params)
 
         for sesh in data:
             sessions[sesh[0]] = {
@@ -239,21 +239,21 @@ class SurfSpot:
         return sessions
 
 
-def deleteSession(sessionID: int, db: object) -> bool:
+def delete_session(sessionID: int, db: object) -> bool:
     """
     Deletes a session from the session table. Returns True if
     successful and False otherwise.
     """
     query = "DELETE FROM SavedSessions WHERE SessionID = %s"
     params = [sessionID]
-    result = db.executeQuery(query, params)
+    result = db.execute_query(query, params)
 
     if not result:
         return False
     return True
 
 
-def createSpot(userID: int, db: object, name: str, latitude: float,
+def create_spot(userID: int, db: object, name: str, latitude: float,
                longitude: float, firstStationID: str = None,
                secondStationID: str = None) -> bool:
     """
@@ -280,27 +280,27 @@ def createSpot(userID: int, db: object, name: str, latitude: float,
         params = (userID, name, latitude, longitude, firstStationID,
                   secondStationID)
 
-    response = db.executeQuery(query, params)
+    response = db.execute_query(query, params)
     if not response:
         return False
 
     return True, response[1]
 
 
-def getAllSpots(userID: int, db: object) -> dict:
+def get_all_spots(userID: int, db: object) -> dict:
     query = "SELECT spotID FROM SurfSpots WHERE userID = %s"
-    data = db.executeQuery(query, [userID])
+    data = db.execute_query(query, [userID])
     spots = {}
     if data:
         for spot in data:
             current = SurfSpot(spot[0], db)
             current_app.logger.info(current)
-            spots[spot[0]] = current.getSpot()
-            spots[spot[0]]["ideal"] = current.getIdeal()
+            spots[spot[0]] = current.get_spot()
+            spots[spot[0]]["ideal"] = current.get_ideal()
     return spots
 
 
-def getAllSessions(userID: int, db: object) -> dict:
+def get_all_sessions(userID: int, db: object) -> dict:
     query = "SELECT SavedSessions.sessionID, SavedSessions.date,\
             SavedSessions.windSpeed, SavedSessions.windDirection,\
             SavedSessions.swellHeight, SavedSessions.swellPeriod,\
@@ -309,7 +309,7 @@ def getAllSessions(userID: int, db: object) -> dict:
             SavedSessions.description, SurfSpots.name, SurfSpots.spotID FROM\
             SavedSessions INNER JOIN SurfSpots ON SavedSessions.spotID =\
             SurfSpots.spotID WHERE SavedSessions.userID = %s"
-    data = db.executeQuery(query, [userID])
+    data = db.execute_query(query, [userID])
     sessions = {}
     if data:
         for sesh in data:

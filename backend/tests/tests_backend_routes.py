@@ -4,8 +4,8 @@ import pytest
 import subprocess
 
 from app import app
-from dbClass import Database, factory
-from appConfig import AppConfig
+from db_class import Database, factory
+from app_config import AppConfig
 from dotenv import load_dotenv
 
 
@@ -51,7 +51,7 @@ def db():
     yield db
 
     # Clear test db after finishing
-    db.executeQuery("DROP TABLE IF EXISTS Buoys, Users, SurfSpots,\
+    db.execute_query("DROP TABLE IF EXISTS Buoys, Users, SurfSpots,\
                     IdealConditions, SavedSessions;", [])
 
 
@@ -137,7 +137,7 @@ class TestNotLoggedRoutes():
         Testing the response when there is no data returned
         """
         app.db = db
-        monkeypatch.setattr("app.allBuoys", lambda db: None)
+        monkeypatch.setattr("app.all_buoys", lambda db: None)
         response = client.get('/request', query_string={'stationID': 'all'})
         assert response.status_code == 404
         assert json.loads(response.data) == {"result": "Error occurred"}
@@ -225,7 +225,7 @@ class TestNotLoggedRoutes():
         Testing sending an empty form
         """
         monkeypatch.setattr("app.db_handler", db)
-        monkeypatch.setattr("app.User.createUser",
+        monkeypatch.setattr("app.User.create_user",
                             lambda username,
                             password,
                             db: (False, 2)
@@ -307,7 +307,7 @@ class TestLoggedRoutes():
         """
         Tests whether a failed spot creation returns an error
         """
-        monkeypatch.setattr("app.createSpot", lambda *args, **kwargs: False)
+        monkeypatch.setattr("app.create_spot", lambda *args, **kwargs: False)
         response = client.post('/surfSpot', json={
             "userID": 1,
             "name": "Ocean Beach",
@@ -343,7 +343,7 @@ class TestLoggedRoutes():
         Tests what happens when there is an error in creating the
         ideal conditions for a surf spot.
         """
-        monkeypatch.setattr("app.SurfSpot.createIdeal",
+        monkeypatch.setattr("app.SurfSpot.create_ideal",
                             lambda *args, **kwargs: False)
         response = client.post('/ideal', json={
             "spotID": 1,
@@ -444,7 +444,7 @@ class TestLoggedRoutes():
         Test the response when there is an error during the spot update
         part of the update
         """
-        monkeypatch.setattr("app.SurfSpot.updateSpot",
+        monkeypatch.setattr("app.SurfSpot.update_spot",
                             lambda *args, **kwargs: False)
         response = client.put('/surfSpot', json={
             "spotID": 1,
@@ -469,7 +469,7 @@ class TestLoggedRoutes():
         Test the response when there is an error during the ideal update
         part of the update
         """
-        monkeypatch.setattr("app.SurfSpot.updateIdeal",
+        monkeypatch.setattr("app.SurfSpot.update_ideal",
                             lambda *args, **kwargs: False)
         response = client.put('/surfSpot', json={
             "spotID": 1,
@@ -541,7 +541,7 @@ class TestLoggedRoutes():
         Testing the response when there is an error in the session creation.
         """
         monkeypatch.setattr("app.db_handler", db)
-        monkeypatch.setattr("app.SurfSpot.saveSession",
+        monkeypatch.setattr("app.SurfSpot.save_session",
                             lambda *args, **kwargs: False)
         response = client.post('/Sessions', json={
             "date": "2025-04-20",
@@ -599,7 +599,7 @@ class TestLoggedRoutes():
         Testing what happens when editing a session and an error occurs
         """
         monkeypatch.setattr("app.db_handler", db)
-        monkeypatch.setattr("app.SurfSpot.editSession",
+        monkeypatch.setattr("app.SurfSpot.edit_session",
                             lambda *args, **kwargs: False)
         response = client.put('/Sessions', json={
             "date": "2025-04-20",
@@ -689,7 +689,7 @@ class TestLoggedRoutes():
         Test response when an error occurs when deleting a surf session
         """
         monkeypatch.setattr("app.db_handler", db)
-        monkeypatch.setattr("app.deleteSession",
+        monkeypatch.setattr("app.delete_session",
                             lambda *args, **kwargs: False)
         response = client.delete('/Sessions')
         assert response.status_code == 409

@@ -1,15 +1,15 @@
 import requests
-from dbClass import Database
+from db_class import Database
 
 
-def allBuoys(db: object) -> dict:
+def all_buoys(db: object) -> dict:
     """
     This function takes in a database object and returns all buoys
     in the database in a dictionary.
     """
     buoys = {}
     query = "SELECT * FROM Buoys"
-    data = db.executeQuery(query, [])
+    data = db.execute_query(query, [])
     if data:
         for buoy in data:
             buoys[buoy[0]] = {
@@ -31,7 +31,7 @@ def parseBuoy(stationID) -> dict | None:
     """
 
     # open the file, split lines, and define variables
-    data = buoyRequest(stationID)
+    data = buoy_request(stationID)
     dataDict = None
     if data[0]:
         content = data[0].splitlines()
@@ -48,7 +48,7 @@ def parseBuoy(stationID) -> dict | None:
     return dataDict
 
 
-def buoyRequest(stationID) -> (tuple):
+def buoy_request(stationID) -> (tuple):
     """
     Function used to request the URL of the buoy and returns a
     tuple containing the request reponse and the status code.
@@ -65,7 +65,3 @@ def buoyRequest(stationID) -> (tuple):
     else:
         return (None, response.status_code)
 
-
-if __name__ == "__main__":
-    db = Database()
-    print(allBuoys(db))

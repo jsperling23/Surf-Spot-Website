@@ -51,7 +51,7 @@ class Database:
             else:
                 self.logger.warning(err)
 
-    def executeQuery(self, query: str, params: list, fetch: str = "all") -> \
+    def execute_query(self, query: str, params: list, fetch: str = "all") -> \
             list:
         """
         Takes in a query and its parameters and returns the resulting list

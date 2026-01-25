@@ -8,13 +8,13 @@ from flask import Flask, request, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required
 
 # import backend functions
-from appConfig import AppConfig
-from buoyParser import parseBuoy, allBuoys
-from haversineCalc import haversineCalc
+from app_config import AppConfig
+from buoy_parser import parseBuoy, all_buoys
+from haversine_calc import haversineCalc
 from user import User
-from dbClass import Database, factory
-from surfSpot import SurfSpot, createSpot, getAllSpots, getAllSessions, \
-     deleteSession
+from db_class import Database, factory
+from surf_spot import SurfSpot, create_spot, get_all_spots, get_all_sessions, \
+     delete_session
 
 # setup config
 load_dotenv()
@@ -81,7 +81,7 @@ def login():
     password = formData['password']
     user = User.get(username, db)
     if user:
-        user.verifyPassword(password)
+        user.verify_password(password)
         if user.is_authenticated():
             login_user(user)
             app.logger.info("User Login Successful!")
@@ -91,7 +91,7 @@ def login():
 
 
 @app.route("/createUser", methods=["POST"])
-def createUser():
+def create_user():
     """
     Route used to create a user. POST method that takes in a username
     and password from frontend form. If the username already exists it
@@ -107,7 +107,7 @@ def createUser():
     password = formData['password']
     app.logger.info(f"User: {username}")
 
-    creation = User.createUser(username, password, db)
+    creation = User.create_user(username, password, db)
     if creation[0] is True:
         return jsonify({"result": "Account creation successful"}), 200
     elif creation[0] is False and creation[1] == 1:
@@ -117,7 +117,7 @@ def createUser():
 
 
 @app.get("/request")
-def buoyRequest():
+def buoy_request():
     """
     route for getting buoy data for the station ID passed in the get request.
     To use this route the following request URL should be utilized:
@@ -127,7 +127,7 @@ def buoyRequest():
 
     # get all buoys
     if request.args.get("stationID") == "all":
-        data = allBuoys(db)
+        data = all_buoys(db)
         if data:
             return jsonify(data), 200
         return jsonify({"result": "Error occurred"}), 404
@@ -149,7 +149,7 @@ def buoyRequest():
 
 # Buoy data and surf spot routes
 @app.route("/findBuoys")
-def findBuoys():
+def find_buoys():
     """
     route to get the nearest buoys to a particular set of coordinates
     URL to use by frontend:
@@ -195,7 +195,7 @@ def logout():
 
 @app.route("/surfSpot", methods=["GET", "PUT", "POST", "DELETE"])
 @login_required
-def spotRoute():
+def spot_route():
     """
     Route for getting a surf spot and creating a new surf spot.
     GET: Returns a JSON object of a surf spot or an empty object
@@ -209,7 +209,7 @@ def spotRoute():
 
     if request.method == "GET":
         userID = request.args.get('userID', type=int)
-        data = getAllSpots(userID, db)
+        data = get_all_spots(userID, db)
         return jsonify(data), 200
 
     if request.method == "PUT":
@@ -232,10 +232,10 @@ def spotRoute():
         tideMin = formData["tideMin"]
         spot = SurfSpot(spotID, db)
         if spot.isValid:
-            result1 = spot.updateSpot(
+            result1 = spot.update_spot(
                 name, latitude, longitude, firstStation, secondStation
             )
-            result2 = spot.updateIdeal(
+            result2 = spot.update_ideal(
                 windDir, swellDir, size, period, tideMax, tideMin
             )
             if result1 and result2:
@@ -252,7 +252,7 @@ def spotRoute():
         spotID = request.args.get('spotID', type=int)
         spot = SurfSpot(spotID, db)
         if spot.isValid:
-            result = spot.deleteSpot()
+            result = spot.delete_spot()
             if result:
                 return jsonify({"result": "Spot Deleted"}), 201
         return jsonify({"result": "Error occurred"}), 409
@@ -265,7 +265,7 @@ def spotRoute():
         longitude = formData["longitude"]
         firstBuoyID = formData["firstBuoyID"]
         secondBuoyID = formData["secondBuoyID"]
-        result = createSpot(userID, db, name, latitude, longitude,
+        result = create_spot(userID, db, name, latitude, longitude,
                             firstBuoyID, secondBuoyID)
         if result:
             return jsonify({"result": "Spot Created",
@@ -288,7 +288,7 @@ def ideal():
         spot = SurfSpot(spotID, db)
         data = {}
         if spot.isValid:
-            data = spot.getIdeal()
+            data = spot.get_ideal()
         return jsonify(data)
 
     if request.method == "POST":
@@ -301,7 +301,7 @@ def ideal():
         period = formData["period"]
         tideMax = formData["tideMax"]
         tideMin = formData["tideMin"]
-        result = spot.createIdeal(windDir, swellDir, size, period, tideMax,
+        result = spot.create_ideal(windDir, swellDir, size, period, tideMax,
                                   tideMin)
         if result:
             return jsonify({"result": "Ideal Created"}), 201
@@ -317,7 +317,7 @@ def ideal():
         period = formData["period"]
         tideMax = formData["tideMax"]
         tideMin = formData["tideMin"]
-        result = spot.updateIdeal(windDir, swellDir, size, period, tideMax,
+        result = spot.update_ideal(windDir, swellDir, size, period, tideMax,
                                   tideMin)
         if result:
             return jsonify({"result": "Ideal updated"}), 201
@@ -326,7 +326,7 @@ def ideal():
 
 @app.route('/Sessions', methods=["GET", "POST", "DELETE", "PUT"])
 @login_required
-def savedSessions():
+def saved_sessions():
     """
     Route to save a surf session or get previously saved
     surf sessions. POST returns a 201 if successful and a 409
@@ -339,7 +339,7 @@ def savedSessions():
         if not userID:
             return jsonify({"result": "Bad request"}), 400
 
-        data = getAllSessions(userID, db)
+        data = get_all_sessions(userID, db)
         if not data:
             data = {}
 
@@ -362,7 +362,7 @@ def savedSessions():
         swellAct = formData["swellAct"]
         tideDir = formData["tideDir"]
         description = formData["description"]
-        result = spot.saveSession(
+        result = spot.save_session(
             date,
             windSpd,
             windDir,
@@ -397,7 +397,7 @@ def savedSessions():
         swellAct = formData["swellAct"]
         tideDir = formData["tideDir"]
         description = formData["description"]
-        result = spot.editSession(
+        result = spot.edit_session(
             date,
             windSpd,
             windDir,
@@ -420,7 +420,7 @@ def savedSessions():
         if not sessionID:
             return jsonify({"result": "Bad request"}), 400
 
-        result = deleteSession(sessionID, db)
+        result = delete_session(sessionID, db)
         if result:
             return jsonify({"result": "Session Deleted"}), 201
         return jsonify({"result": "Error occurred"}), 409

@@ -8,12 +8,12 @@ class User:
         self._userID = None
         self._password = password
         self._isAuthenticated = False
-        self.setUser(db)
+        self.set_user(db)
 
-    def setUser(self, db: object) -> None:
+    def set_user(self, db: object) -> None:
         # find the user
         query = "SELECT * FROM Users WHERE username = %s"
-        user = db.executeQuery(query, [self._username], "one")
+        user = db.execute_query(query, [self._username], "one")
 
         # if the user exists, check if the username and password match
         if user:
@@ -21,7 +21,7 @@ class User:
                 self._username = user[1]
                 self._userID = user[0]
 
-    def verifyPassword(self, passwordToCheck: str) -> bool:
+    def verify_password(self, passwordToCheck: str) -> bool:
         """
         Verfies if the password from the form matches what is in the
         database
@@ -52,7 +52,7 @@ class User:
     def get(username: str, db: object):
         # find the user
         query = "SELECT * FROM Users WHERE username = %s"
-        user = db.executeQuery(query, [username], "one")
+        user = db.execute_query(query, [username], "one")
         current_app.logger.info(user)
         if user:
             return User(user[1], user[2], db)
@@ -60,12 +60,12 @@ class User:
             return None
 
     @staticmethod
-    def checkIfExists(username: str, db: object) -> bool:
+    def check_if_exists(username: str, db: object) -> bool:
         """
         Check if a user exists.
         """
         query = "SELECT * FROM Users WHERE username = %s"
-        user = db.executeQuery(query, [username])
+        user = db.execute_query(query, [username])
         # If user is found, return True, else False
         if user:
             return True
@@ -73,7 +73,7 @@ class User:
             return False
 
     @staticmethod
-    def createUser(username: str, password: str, db: object) -> tuple:
+    def create_user(username: str, password: str, db: object) -> tuple:
         """
         This function takes in a username and password and database object.
         Then an attempt at creating a new user is completed.
@@ -90,13 +90,13 @@ class User:
         """
         if not db:
             return (False, 2)
-        if not User.checkIfExists(username, db):
+        if not User.check_if_exists(username, db):
             salt = bcrypt.gensalt()
             hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
             current_app.logger.info(type(hashed))
             params = [username, hashed]
             query = "INSERT INTO Users(username, password) VALUES(%s, %s);"
-            db.executeQuery(query, params)
+            db.execute_query(query, params)
             return (True, 0)
         else:
             return (False, 1)

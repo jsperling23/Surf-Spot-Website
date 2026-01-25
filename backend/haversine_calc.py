@@ -1,9 +1,8 @@
 from haversine import haversine
-from dbClass import Database
 from flask import current_app
 
 
-def normalizeCoord(lat: float, long: float) -> float:
+def normalize_coord(lat: float, long: float) -> float:
     """
     If the coordinate is out of range, normalize it within
     the correct range
@@ -37,13 +36,13 @@ def haversineCalc(coord: tuple, db: object) -> dict:
         upperLat += 5
         lowLong -= 5
         upperLong += 5
-        lowLat, lowLong = normalizeCoord(lowLat, lowLong)
-        upperLat, upperLong = normalizeCoord(upperLat, upperLong)
+        lowLat, lowLong = normalize_coord(lowLat, lowLong)
+        upperLat, upperLong = normalize_coord(upperLat, upperLong)
 
         query = "SELECT * FROM Buoys WHERE (latitude BETWEEN %s AND %s) \
             AND (longitude BETWEEN %s AND %s) ORDER BY latitude DESC;"
         params = [lowLat, upperLat, lowLong, upperLong]
-        data = db.executeQuery(query, params)
+        data = db.execute_query(query, params)
 
         # find shortest great arc length using haversine formula
         for value in data:
