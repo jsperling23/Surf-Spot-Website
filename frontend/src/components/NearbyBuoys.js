@@ -5,7 +5,7 @@ function Nearby( { lat, long, nearby, setNearby, fillBuoys }) {
     useEffect(() => {
         const findNear = async () => {
             if (lat !== 0 && long !== 0) {
-                const response = await fetch(`/backend/findBuoys?lat=${lat}&long=${long}`)
+                const response = await fetch(`/backend/find_buoys?lat=${lat}&long=${long}`)
                 const data = await response.text()
                 const parsedData = JSON.parse(data)
                 console.log(parsedData)

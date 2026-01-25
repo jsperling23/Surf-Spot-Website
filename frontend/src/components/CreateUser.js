@@ -9,7 +9,7 @@ function CreateUser () {
     const navigate = useNavigate();
 
     async function createFunc(username, password) {
-        const create = await fetch(`/backend/createUser`,
+        const create = await fetch(`/backend/create_user`,
             {method: 'POST',
             headers: {
                 'Content-Type': 'application/json'},

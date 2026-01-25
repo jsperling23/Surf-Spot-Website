@@ -90,7 +90,7 @@ def login():
     return jsonify({"result": "Login Failed"}), 401
 
 
-@app.route("/createUser", methods=["POST"])
+@app.route("/create_user", methods=["POST"])
 def create_user():
     """
     Route used to create a user. POST method that takes in a username
@@ -148,12 +148,12 @@ def buoy_request():
 
 
 # Buoy data and surf spot routes
-@app.route("/findBuoys")
+@app.route("/find_buoys")
 def find_buoys():
     """
     route to get the nearest buoys to a particular set of coordinates
     URL to use by frontend:
-    /findBuoys?lat=<float>&long=<float>
+    /find-buoys?lat=<float>&long=<float>
     """
     db = db_handler
     lat = request.args.get('lat', type=float)
@@ -193,13 +193,13 @@ def logout():
     return jsonify({"result": "Logout Successful"}), 200
 
 
-@app.route("/surfSpot", methods=["GET", "PUT", "POST", "DELETE"])
+@app.route("/surf_spot", methods=["GET", "PUT", "POST", "DELETE"])
 @login_required
 def spot_route():
     """
     Route for getting a surf spot and creating a new surf spot.
     GET: Returns a JSON object of a surf spot or an empty object
-    if it doesn't exist. /surfSpot?spotID=<int>
+    if it doesn't exist. /surf_spot?spotID=<int>
     POST: Takes in form data from the request and returns 201
     if successful or a 409 error otherwise.
     PUT: Edits both the ideal conditions and spot data. Avoids

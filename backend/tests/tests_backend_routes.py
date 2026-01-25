@@ -150,7 +150,7 @@ class TestNotLoggedRoutes():
         assert response.status_code == 400
         assert json.loads(response.data) == {"result": "No station ID passed"}
 
-    # /findBuoys route testing
+    # /find-buoys route testing
     def test_buoy_find(self, client, monkeypatch, db):
         """
         Testing finding the closest buoys using Ocean Beach, SF, as coordinates
@@ -158,7 +158,7 @@ class TestNotLoggedRoutes():
         long: 122.5107
         """
         monkeypatch.setattr("app.db_handler", db)
-        response = client.get('/findBuoys', query_string={
+        response = client.get('/find-buoys', query_string={
             "lat": 37.7594,
             "long": -122.5107
         })
@@ -178,18 +178,18 @@ class TestNotLoggedRoutes():
         """
         Testing looking for coordinates with no data passed
         """
-        response = client.get('/findBuoys', query_string={})
+        response = client.get('/find-buoys', query_string={})
         assert response.status_code == 400
         data = json.loads(response.data)
         assert data == {"result": "No coorindates passed"}
 
-    # /createUser route testing
+    # /create-user route testing
     def test_create_user(self, monkeypatch, client, db):
         """
         Testing creating a user
         """
         monkeypatch.setattr("app.db_handler", db)
-        response = client.post('/createUser', json={
+        response = client.post('/create-user', json={
             "username": "test",
             "password": "test"
         })
@@ -202,7 +202,7 @@ class TestNotLoggedRoutes():
         Testing trying to create a user that already exists
         """
         monkeypatch.setattr("app.db_handler", db)
-        response = client.post('/createUser', json={
+        response = client.post('/create-user', json={
             "username": "test",
             "password": "test"
         })
@@ -215,7 +215,7 @@ class TestNotLoggedRoutes():
         Testing sending an empty form
         """
         monkeypatch.setattr("app.db_handler", db)
-        response = client.post('/createUser', json={})
+        response = client.post('/create-user', json={})
         assert response.status_code == 400
         data = json.loads(response.data)
         assert data == {"result": "Bad request, no data passed to form!"}
@@ -230,7 +230,7 @@ class TestNotLoggedRoutes():
                             password,
                             db: (False, 2)
                             )
-        response = client.post('/createUser', json={
+        response = client.post('/create-user', json={
             "username": "test2",
             "password": "test"
         })
@@ -284,13 +284,13 @@ class TestLoggedRoutes():
         response = client.get('/auth')
         assert response.status_code == 200
 
-    # /surfSpot testing creating a surf spot
+    # /surf_spot testing creating a surf spot
     def test_create_spot(self, client, monkeypatch, db):
         """
         Test the reponse when creating a new surf spot
         """
         monkeypatch.setattr("app.db_handler", db)
-        response = client.post('/surfSpot', json={
+        response = client.post('/surf_spot', json={
             "userID": 1,
             "name": "Ocean Beach",
             "latitude": 37.690,
@@ -308,7 +308,7 @@ class TestLoggedRoutes():
         Tests whether a failed spot creation returns an error
         """
         monkeypatch.setattr("app.create_spot", lambda *args, **kwargs: False)
-        response = client.post('/surfSpot', json={
+        response = client.post('/surf_spot', json={
             "userID": 1,
             "name": "Ocean Beach",
             "latitude": 37.690,
@@ -358,13 +358,13 @@ class TestLoggedRoutes():
         data = json.loads(response.data)
         assert data == {"result": "Error occurred"}
 
-    # /surfSpot testing for updating the surf spot and ideal conditions
+    # /surf_spot testing for updating the surf spot and ideal conditions
     def test_get_spot(self, client, monkeypatch, db):
         """
         Tests getting the surf spots for a particular user
         """
         monkeypatch.setattr("app.db_handler", db)
-        response = client.get('/surfSpot', query_string={'userID': 1})
+        response = client.get('/surf_spot', query_string={'userID': 1})
         assert response.status_code == 200
         data = json.loads(response.data)
         assert data == {'1':
@@ -393,7 +393,7 @@ class TestLoggedRoutes():
         Tests updating a surf spot
         """
         monkeypatch.setattr("app.db_handler", db)
-        response = client.put('/surfSpot', json={
+        response = client.put('/surf_spot', json={
             "spotID": 1,
             "name": "Ocean Changed Beach",
             "latitude": 45.0,
@@ -416,7 +416,7 @@ class TestLoggedRoutes():
         Tests getting the updated spot
         """
         monkeypatch.setattr("app.db_handler", db)
-        response = client.get('/surfSpot', query_string={'userID': 1})
+        response = client.get('/surf_spot', query_string={'userID': 1})
         assert response.status_code == 200
         data = json.loads(response.data)
         assert data == {'1':
@@ -446,7 +446,7 @@ class TestLoggedRoutes():
         """
         monkeypatch.setattr("app.SurfSpot.update_spot",
                             lambda *args, **kwargs: False)
-        response = client.put('/surfSpot', json={
+        response = client.put('/surf_spot', json={
             "spotID": 1,
             "name": "Ocean Changed Beach",
             "latitude": 45.0,
@@ -471,7 +471,7 @@ class TestLoggedRoutes():
         """
         monkeypatch.setattr("app.SurfSpot.update_ideal",
                             lambda *args, **kwargs: False)
-        response = client.put('/surfSpot', json={
+        response = client.put('/surf_spot', json={
             "spotID": 1,
             "name": "Ocean Changed Beach",
             "latitude": 45.0,
@@ -495,7 +495,7 @@ class TestLoggedRoutes():
         """
         monkeypatch.setattr("app.SurfSpot.__init__", lambda self, spotID,
                             db: setattr(self, "isValid", False))
-        response = client.put('/surfSpot', json={
+        response = client.put('/surf_spot', json={
             "spotID": 1,
             "name": "Ocean Changed Beach",
             "latitude": 45.0,
