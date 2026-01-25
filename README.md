@@ -1,3 +1,8 @@
+# V1.2 Updates
+- Added in a testing suite for all backend routes
+- Updated the map to show surf spots once user is logged in
+- Database connection retry when the database goes offline
+
 # Surf-Spot-Website
 The main purpose of this app is to allow a user to create an account and use that to create surf spots and journal their sessions at these spots. Spot creation includes setting ideal conditions and journalling includes the ability to log the conditions of that particular session as well as a place to write up how things went that day. Along with that, non-account holding users can use the site to get the current conditions of NOAA buoys across the world using a map, manually entering in the station number, or finding buoy stations based on your location. 
 
