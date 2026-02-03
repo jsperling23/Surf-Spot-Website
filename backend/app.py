@@ -15,6 +15,7 @@ from user import User
 from db_class import Database, factory
 from surf_spot import SurfSpot, create_spot, get_all_spots, get_all_sessions, \
      delete_session
+from forecast.py import PointForecast
 
 # setup config
 load_dotenv()
@@ -424,6 +425,17 @@ def saved_sessions():
         if result:
             return jsonify({"result": "Session Deleted"}), 201
         return jsonify({"result": "Error occurred"}), 409
+
+
+@app.route('/forecast', methods=["GET"])
+def forecast():
+    latitude = request.args.get("latitude")
+    longitude = request.args.get("longitude")
+    forecast = PointForecast(latitude, longitude)
+    res = forecast.get_point_forecast()
+    if res:
+        return res, 200
+    return jsonify({"result": "Bad request"}), 400
 
 
 if __name__ == "__main__":
